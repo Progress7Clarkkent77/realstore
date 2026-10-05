@@ -145,8 +145,10 @@ class _ReportReasonDialogState extends State<ReportReasonDialog> {
             const SizedBox(height: 4),
             Text(
               'Select a reason',
-              style:
-                  TextStyle(fontSize: 12, color: Colors.black.withOpacity(0.5)),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.black.withOpacity(0.5),
+              ),
             ),
             const SizedBox(height: 8),
             ...widget.reasons.map(
@@ -177,10 +179,13 @@ class _ReportReasonDialogState extends State<ReportReasonDialog> {
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed:
-                        isSubmitting ? null : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel',
-                        style: TextStyle(color: Colors.black54)),
+                    onPressed: isSubmitting
+                        ? null
+                        : () => Navigator.of(context).pop(),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black54),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -188,26 +193,32 @@ class _ReportReasonDialogState extends State<ReportReasonDialog> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.confirmColor,
-                      disabledBackgroundColor:
-                          widget.confirmColor.withOpacity(0.4),
+                      disabledBackgroundColor: widget.confirmColor.withOpacity(
+                        0.4,
+                      ),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                    onPressed:
-                        selectedReason == null || isSubmitting ? null : _submit,
+                    onPressed: selectedReason == null || isSubmitting
+                        ? null
+                        : _submit,
                     child: isSubmitting
                         ? const SizedBox(
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Text(
                             widget.confirmLabel,
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),

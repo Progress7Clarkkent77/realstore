@@ -1,121 +1,206 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:realstore/live/liveControllers/balance_controller.dart';
+import 'package:realstore/live/liveControllers/referral_controller.dart';
+import 'package:realstore/live/liveControllers/status_controller.dart';
+import 'package:realstore/live/liveControllers/theme_controller.dart';
+import 'package:realstore/live/liveControllers/verified_controller.dart';
+import 'package:realstore/live/pages/cartPage.dart';
+import 'package:realstore/live/pages/checkOutPage.dart';
+import 'package:realstore/live/pages/manageProductPage.dart';
+import 'package:realstore/live/pages/orderPage.dart';
+import 'package:realstore/live/pages/productDetailsPage.dart';
+import 'package:realstore/live/pages/uploadProductPage.dart';
+import 'package:url_strategy/url_strategy.dart';
 
-void main() {
+import 'package:realstore/live/liveControllers/adminAuthController.dart';
+import 'package:realstore/live/liveControllers/adminDashboardController.dart';
+import 'package:realstore/live/liveControllers/ecommerceCartController.dart';
+import 'package:realstore/live/liveControllers/ecommerceStoreController.dart';
+import 'package:realstore/live/liveControllers/manageOrdersController.dart';
+import 'package:realstore/live/liveControllers/manageProductController.dart';
+import 'package:realstore/live/liveControllers/orderController.dart';
+import 'package:realstore/live/liveControllers/reward_controller.dart';
+import 'package:realstore/live/liveControllers/startup_controller.dart';
+import 'package:realstore/live/liveControllers/uploadProductController.dart';
+import 'package:realstore/live/pages/adminDashboard.dart';
+import 'package:realstore/live/pages/ecommerceHomePage.dart';
+import 'package:realstore/live/pages/ecommerce_routes.dart';
+import 'package:realstore/live/pages/manageOrdersPage.dart';
+import 'package:realstore/live/pages/onboarding.dart';
+import 'package:realstore/live/pages/route_guards.dart';
+import 'package:realstore/live/pages/term_of_use.dart';
+import 'package:realstore/live/userAuth/account_controller.dart';
+import 'package:realstore/live/userAuth/authController.dart';
+import 'package:realstore/live/userAuth/authpages.dart';
+import 'package:realstore/live/userAuth/forgotpassword.dart';
+
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Clean URLs on web (no #).
+  setPathUrlStrategy();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Wait for Firebase to restore the saved session so route guards see the
+  // real sign-in state on a page refresh (otherwise a signed-in admin
+  // refreshing /admin would be bounced to the login page).
+  await FirebaseAuth.instance.authStateChanges().first;
+
+  // Local storage is tiny and some controllers (e.g. theme) read it
+  // immediately after login, so initialise it before the UI starts.
+  await GetStorage.init();
+
   runApp(const MyApp());
+}
+
+/// Lazy controller registration. `fenix: true` recreates a controller if it
+/// was disposed and is requested again.
+class AppBinding extends Bindings {
+  @override
+  void dependencies() {
+    // Auth & user
+    Get.put(AuthController(), permanent: true);
+    Get.put(ThemeController(), permanent: true);
+    Get.put(StartupController(), permanent: true);
+
+    Get.lazyPut(() => AccountController(), fenix: true);
+    //Get.lazyPut(() => StartupController(), fenix: true);
+    Get.lazyPut(() => RewardController(), fenix: true);
+    //Get.lazyPut(() => ThemeController(), fenix: true);
+    Get.lazyPut(() => AvailableBalanceController(), fenix: true);
+    Get.lazyPut(() => ReferController(), fenix: true);
+    Get.lazyPut(() => StatusController(), fenix: true);
+    Get.lazyPut(() => VerifiedController(), fenix: true);
+
+    // Storefront
+    Get.lazyPut(() => EcommerceStoreController(), fenix: true);
+    Get.lazyPut(() => EcommerceCartController(), fenix: true);
+    Get.lazyPut(() => OrderController(), fenix: true);
+
+    // Admin
+    Get.lazyPut(() => AdminAuthController(), fenix: true);
+    Get.lazyPut(() => EcommerceAdminDashboardController(), fenix: true);
+    Get.lazyPut(() => ManageOrdersController(), fenix: true);
+    Get.lazyPut(() => ManageProductsController(), fenix: true);
+    Get.lazyPut(() => UploadProductController(), fenix: true);
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  static final List<GetPage> _pages = [
+    //------------------------------------------------
+    // PUBLIC
+    //------------------------------------------------
+    GetPage(name: EcommerceLiveRoutes.root, page: () => const Onboarding()),
+    GetPage(
+      name: EcommerceLiveRoutes.onboarding,
+      page: () => const Onboarding(),
+    ),
+    GetPage(name: EcommerceLiveRoutes.home, page: () => EcommerceHomePage()),
+    GetPage(name: EcommerceLiveRoutes.login, page: () => const EarnLogin()),
+    GetPage(name: EcommerceLiveRoutes.signup, page: () => const EarnSignUp()),
+    GetPage(
+      name: EcommerceLiveRoutes.forgotPassword,
+      page: () => ForgotPassword(),
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.changePassword,
+      page: () => ChangePassword(),
+      middlewares: [AuthGuard()],
+    ),
+    GetPage(name: EcommerceLiveRoutes.terms, page: () => TermsOfUseScreen()),
+
+    //------------------------------------------------
+    // CUSTOMER (signed in)
+    // Replace the class names with your real pages, then uncomment.
+    //------------------------------------------------
+    GetPage(
+      name: EcommerceLiveRoutes.productDetails,
+      page: () => ProductDetailsPage(),
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.cart,
+      page: () => CartPage(),
+      middlewares: [AuthGuard()],
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.checkout,
+      page: () => CheckoutPage(),
+      middlewares: [AuthGuard()],
+    ),
+
+    GetPage(
+      name: EcommerceLiveRoutes.orders,
+      page: () => OrdersPage(),
+      middlewares: [AuthGuard()],
+    ),
+
+    //------------------------------------------------
+    // ADMIN ONLY
+    //------------------------------------------------
+    GetPage(
+      name: EcommerceLiveRoutes.admin,
+      page: () => EcommerceAdminDashboardPage(),
+      middlewares: [AdminGuard()],
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.manageOrders,
+      page: () => ManageOrdersPage(),
+      middlewares: [AdminGuard()],
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.manageProducts,
+      page: () => ManageProductsPage(),
+      middlewares: [AdminGuard()],
+    ),
+    GetPage(
+      name: EcommerceLiveRoutes.uploadProducts,
+      page: () => UploadProductsPage(),
+      middlewares: [AdminGuard()],
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      title: 'RealStore',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      initialBinding: AppBinding(),
+      initialRoute: EcommerceLiveRoutes.root,
+      getPages: _pages,
+      unknownRoute: GetPage(
+        name: '/not-found',
+        page: () => Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Page not found', style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () => Get.offAllNamed(EcommerceLiveRoutes.home),
+                  child: const Text(
+                    'Back to store',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

@@ -30,19 +30,13 @@ class ProductsPage extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Text(
           "Products",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.shopping_cart_outlined,
-            ),
+            icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () {
-              nav.goTo(
-                EcommerceLiveRoutes.cart,
-              );
+              nav.goTo(EcommerceLiveRoutes.cart);
             },
           ),
         ],
@@ -78,9 +72,7 @@ class ProductsPage extends StatelessWidget {
               hintText: "Search products...",
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  16,
-                ),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           ),
@@ -102,38 +94,23 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  Widget _filterChip(
-    String title,
-  ) {
+  Widget _filterChip(String title) {
     return Padding(
-      padding: const EdgeInsets.only(
-        right: 10,
-      ),
-      child: OutlinedButton(
-        onPressed: () {},
-        child: Text(title),
-      ),
+      padding: const EdgeInsets.only(right: 10),
+      child: OutlinedButton(onPressed: () {}, child: Text(title)),
     );
   }
 
-  Widget _productCard(
-    int index,
-  ) {
+  Widget _productCard(int index) {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () {
-        nav.goTo(
-          EcommerceLiveRoutes.productDetails,
-        );
+        nav.goTo(EcommerceLiveRoutes.productDetails);
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black12,
-          ),
-          borderRadius: BorderRadius.circular(
-            20,
-          ),
+          border: Border.all(color: Colors.black12),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,26 +119,18 @@ class ProductsPage extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(
-                      20,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: const Center(
                   child: Text(
                     "IMAGE",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(
-                12,
-              ),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -174,19 +143,12 @@ class ProductsPage extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   const Text(
                     "₦25,000",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -196,9 +158,7 @@ class ProductsPage extends StatelessWidget {
                             Icons.shopping_cart_outlined,
                             size: 18,
                           ),
-                          label: const Text(
-                            "Add",
-                          ),
+                          label: const Text("Add"),
                         ),
                       ),
                     ],

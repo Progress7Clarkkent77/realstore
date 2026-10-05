@@ -7,11 +7,12 @@ class DropDownBtn1 extends StatelessWidget {
   final List<String> items;
   final String selectedItemText;
   final Function(String?) onSelected;
-  const DropDownBtn1(
-      {super.key,
-      required this.items,
-      required this.selectedItemText,
-      required this.onSelected});
+  const DropDownBtn1({
+    super.key,
+    required this.items,
+    required this.selectedItemText,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +29,12 @@ class DropDownBtn1 extends StatelessWidget {
               ),
             ),
             items: items
-                .map((String item) => DropdownMenuItem<String>(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ))
+                .map(
+                  (String item) => DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item, style: const TextStyle(fontSize: 14)),
+                  ),
+                )
                 .toList(),
             value: selectedValue,
             onChanged: (String? value) {
@@ -47,9 +45,7 @@ class DropDownBtn1 extends StatelessWidget {
               height: 40,
               width: 140,
             ),
-            menuItemStyleData: const MenuItemStyleData(
-              height: 40,
-            ),
+            menuItemStyleData: const MenuItemStyleData(height: 40),
           ),
         ),
       ),

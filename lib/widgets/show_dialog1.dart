@@ -5,17 +5,17 @@ void showMarketDialog1(BuildContext context) {
     {
       'image': 'assets/images/productmarket.jpg',
       'text': 'Product Shop',
-      'route': '/login'
+      'route': '/login',
     },
     {
       'image': 'assets/images/ServiceMarket2.jpg',
       'text': 'Service Shop',
-      'route': '/loginS'
+      'route': '/loginS',
     },
     {
       'image': 'assets/images/s6.png',
       'text': 'High End Shop',
-      'route': '/loginH'
+      'route': '/loginH',
     },
     {
       'image': 'assets/images/realestate4.png',
@@ -29,9 +29,7 @@ void showMarketDialog1(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor:
             Colors.transparent, // Make the dialog background transparent
         child: Container(
@@ -53,9 +51,10 @@ void showMarketDialog1(BuildContext context) {
               Text(
                 'Own a',
                 style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               SizedBox(height: 16),
               Expanded(
@@ -101,16 +100,16 @@ void showMarketDialog1(BuildContext context) {
                               left: 0,
                               right: 0,
                               child: Container(
-                                width:
-                                    20, // Set a specific width for the text container
+                                width: 20, // Set a specific width for the text container
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 4), // Reduced vertical padding
+                                  vertical: 4,
+                                ), // Reduced vertical padding
                                 decoration: BoxDecoration(
                                   color:
                                       Colors.black54, // Background for the text
                                   borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(
-                                          10)), // Rounded top corners
+                                    top: Radius.circular(10),
+                                  ), // Rounded top corners
                                 ),
                                 child: Text(
                                   item['text']!,
@@ -160,17 +159,17 @@ void showMarketDialog10(BuildContext context) {
       //'image': 'assets/images/s11.png',
       'image': 'assets/images/productmarket.jpg',
       'text': 'Product Shop',
-      'route': '/login'
+      'route': '/login',
     },
     {
       'image': 'assets/images/ServiceMarket2.jpg',
       'text': 'Service Shop',
-      'route': '/loginS'
+      'route': '/loginS',
     },
     {
       'image': 'assets/images/s6.png',
       'text': 'High End Shop',
-      'route': '/loginH'
+      'route': '/loginH',
     },
     {
       'image': 'assets/images/realestate4.png',
@@ -184,9 +183,7 @@ void showMarketDialog10(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           width: 800, // Adjust dialog width as needed
           padding: EdgeInsets.all(16),
@@ -250,16 +247,16 @@ void showMarketDialog10(BuildContext context) {
                               left: 0,
                               right: 0,
                               child: Container(
-                                width:
-                                    20, // Set a specific width for the text container
+                                width: 20, // Set a specific width for the text container
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 4), // Reduced vertical padding
+                                  vertical: 4,
+                                ), // Reduced vertical padding
                                 decoration: BoxDecoration(
                                   color:
                                       Colors.black54, // Background for the text
                                   borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(
-                                          10)), // Rounded top corners
+                                    top: Radius.circular(10),
+                                  ), // Rounded top corners
                                 ),
                                 child: Text(
                                   item['text']!,
@@ -309,17 +306,17 @@ void showMarketDialog110(BuildContext context) {
       //'image': 'assets/images/s11.png',
       'image': 'assets/images/productmarket.jpg',
       'text': 'Product Shop',
-      'route': '/login'
+      'route': '/login',
     },
     {
       'image': 'assets/images/ServiceMarket2.jpg',
       'text': 'Service Shop',
-      'route': '/loginS'
+      'route': '/loginS',
     },
     {
       'image': 'assets/images/s6.png',
       'text': 'High End Shop',
-      'route': '/loginH'
+      'route': '/loginH',
     },
     {
       'image': 'assets/images/realestate4.png',
@@ -333,9 +330,7 @@ void showMarketDialog110(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           width: 800, // Adjust dialog width as needed
           padding: EdgeInsets.all(16),
@@ -399,16 +394,16 @@ void showMarketDialog110(BuildContext context) {
                               left: 0,
                               right: 0,
                               child: Container(
-                                width:
-                                    20, // Set a specific width for the text container
+                                width: 20, // Set a specific width for the text container
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 4), // Reduced vertical padding
+                                  vertical: 4,
+                                ), // Reduced vertical padding
                                 decoration: BoxDecoration(
                                   color:
                                       Colors.black54, // Background for the text
                                   borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(
-                                          10)), // Rounded top corners
+                                    top: Radius.circular(10),
+                                  ), // Rounded top corners
                                 ),
                                 child: Text(
                                   item['text']!,

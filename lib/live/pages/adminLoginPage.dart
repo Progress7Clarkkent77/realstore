@@ -1,27 +1,18 @@
 import 'package:realstore/live/liveControllers/adminAuthController.dart';
-import 'package:realstore/platformControllers/domainController.dart';
-import 'package:realstore/platformControllers/themeController.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:realstore/live/liveControllers/theme_controller.dart';
 
 class EcommerceAdminLoginPage extends StatelessWidget {
-  final String organizationId;
-  final String slug;
-
-  EcommerceAdminLoginPage({
-    super.key,
-    required this.organizationId,
-    required this.slug,
-  });
+  EcommerceAdminLoginPage({super.key});
 
   final adminAuth = Get.put(AdminAuthController());
 
   final emailCtrl = TextEditingController();
 
   final passwordCtrl = TextEditingController();
-
-  final domainCtrl = Get.find<DomainController>();
 
   @override
   Widget build(BuildContext context) {
@@ -72,14 +63,14 @@ class EcommerceAdminLoginPage extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            domainCtrl.organizationName.value,
+                            "RealStore",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(domainCtrl.organizationType.value),
+                          Text("Shop Real. Shop Direct."),
                           const SizedBox(height: 4),
                           // Text(
                           //   domainCtrl.fullDomain.value,
@@ -150,8 +141,6 @@ class EcommerceAdminLoginPage extends StatelessWidget {
                               await adminAuth.loginAdmin(
                                 email: email,
                                 password: password,
-                                organizationId: organizationId,
-                                slug: slug,
                               );
                             },
                       child: adminAuth.isLoading.value

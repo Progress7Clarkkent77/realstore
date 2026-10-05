@@ -1,6 +1,6 @@
-import 'package:Textido/SocialController/theme_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:realstore/live/liveControllers/theme_controller.dart';
 
 class StartupController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,9 +11,7 @@ class StartupController extends GetxController {
   /// ✅ Decide where app should go
   Future<void> initializeApp() async {
     try {
-      await Future.delayed(
-        const Duration(seconds: 3),
-      );
+      await Future.delayed(const Duration(seconds: 3));
 
       final user = _auth.currentUser;
       final themeController = Get.find<ThemeController>();
@@ -25,10 +23,10 @@ class StartupController extends GetxController {
         Get.offAllNamed('/home');
       } else {
         /// ❌ Not logged in
-        Get.offAllNamed('/login');
+        Get.offAllNamed('/home');
       }
     } catch (e) {
-      Get.offAllNamed('/login');
+      Get.offAllNamed('/home');
     } finally {
       isChecking.value = false;
     }

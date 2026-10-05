@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
-import 'package:Textido/BlockChain/blockchain_controller.dart';
-import 'package:Textido/CowriexController/e_login_controller.dart';
-import 'package:Textido/earn/host_edit.dart';
-import 'package:Textido/earn/seed_phrase.dart';
+import 'package:realstore/live/userAuth/authController.dart';
 
 //import 'package:the_splendid_market/CowriexController/history_controller.dart';
 
@@ -18,7 +15,7 @@ class AccountController extends GetxController {
   final AuthController authController = Get.find<AuthController>();
   // Blockchain blockchain = Blockchain();
 
-//RxString walletAddress = "".obs; // Define observable wallet address
+  //RxString walletAddress = "".obs; // Define observable wallet address
 
   var publicKey = ''.obs;
   var walletAddress = ''.obs; // Observable wallet address
@@ -59,11 +56,9 @@ class AccountController extends GetxController {
     // Real-time updates for user data
     final user = authController.currentUser;
     if (user != null) {
-      _firestore
-          .collection('e-users')
-          .doc(user.uid)
-          .snapshots()
-          .listen((snapshot) {
+      _firestore.collection('e-users').doc(user.uid).snapshots().listen((
+        snapshot,
+      ) {
         final data = snapshot.data();
         if (data != null) {
           userBalance.value = (data['acc_bal'] as num? ?? 0).toDouble();
@@ -185,9 +180,7 @@ class AccountController extends GetxController {
                 borderSide: BorderSide(color: Colors.black, width: 1),
               ),
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.deny(RegExp(r"\s")),
-            ],
+            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s"))],
           ),
           SizedBox(height: 10),
           ElevatedButton(
@@ -239,8 +232,10 @@ class AccountController extends GetxController {
 
               try {
                 // 1. Re-authenticate — required by Firebase before deletion
-                final bool isValid =
-                    await authController.verifyPassword(email, password);
+                final bool isValid = await authController.verifyPassword(
+                  email,
+                  password,
+                );
 
                 if (!isValid) {
                   Get.back(); // close loading
@@ -260,25 +255,35 @@ class AccountController extends GetxController {
 
                 Get.offAllNamed('/login');
 
-                Get.snackbar("Account Deleted",
-                    "Your account has been permanently deleted.");
+                Get.snackbar(
+                  "Account Deleted",
+                  "Your account has been permanently deleted.",
+                );
               } on FirebaseAuthException catch (e) {
                 Get.back(); // close loading
                 if (e.code == 'requires-recent-login') {
-                  Get.snackbar("Error",
-                      "Please log in again before deleting your account.");
+                  Get.snackbar(
+                    "Error",
+                    "Please log in again before deleting your account.",
+                  );
                 } else {
                   Get.snackbar(
-                      "Error", e.message ?? "Failed to delete account.");
+                    "Error",
+                    e.message ?? "Failed to delete account.",
+                  );
                 }
               } catch (e) {
                 Get.back(); // close loading
                 Get.snackbar(
-                    "Error", "Something went wrong. Please try again.");
+                  "Error",
+                  "Something went wrong. Please try again.",
+                );
               }
             },
-            child:
-                Text("Confirm Delete", style: TextStyle(color: Colors.white)),
+            child: Text(
+              "Confirm Delete",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -438,8 +443,10 @@ class AccountController extends GetxController {
     try {
       final user = authController.currentUser;
       if (user != null) {
-        final userDoc =
-            await _firestore.collection('e-users').doc(user.uid).get();
+        final userDoc = await _firestore
+            .collection('e-users')
+            .doc(user.uid)
+            .get();
 
         if (userDoc.exists) {
           final taskData = userDoc.data()?['tasks'] ?? {};
@@ -447,7 +454,7 @@ class AccountController extends GetxController {
             "Survey this Products for 3min",
             "Survey this Services for 3min",
             "Survey this Agents for 3min",
-            "Read The Word for 4min"
+            "Read The Word for 4min",
           ];
 
           // Check if all daily tasks are marked as true
@@ -484,10 +491,9 @@ class AccountController extends GetxController {
     if (user != null) {
       isBalanceVisible.value = !isBalanceVisible.value;
       try {
-        await _firestore
-            .collection('e-users')
-            .doc(user.uid)
-            .update({'is_balance_visible': isBalanceVisible.value});
+        await _firestore.collection('e-users').doc(user.uid).update({
+          'is_balance_visible': isBalanceVisible.value,
+        });
       } catch (e) {
         Get.snackbar("Error", "Failed to update balance visibility");
       }
@@ -520,8 +526,9 @@ class AccountController extends GetxController {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1), // Thicker black border when focused
+                  color: Colors.black,
+                  width: 1,
+                ), // Thicker black border when focused
               ),
             ),
             inputFormatters: [
@@ -588,8 +595,10 @@ class AccountController extends GetxController {
                 barrierDismissible: false,
               );
 
-              bool isValid =
-                  await authController.verifyPassword(email, password);
+              bool isValid = await authController.verifyPassword(
+                email,
+                password,
+              );
 
               // Simulate a 4-second delay before navigation
               await Future.delayed(Duration(seconds: 4));
@@ -642,8 +651,9 @@ class AccountController extends GetxController {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1), // Thicker black border when focused
+                  color: Colors.black,
+                  width: 1,
+                ), // Thicker black border when focused
               ),
             ),
             inputFormatters: [
@@ -710,8 +720,10 @@ class AccountController extends GetxController {
                 barrierDismissible: false,
               );
 
-              bool isValid =
-                  await authController.verifyPassword(email, password);
+              bool isValid = await authController.verifyPassword(
+                email,
+                password,
+              );
 
               // Simulate a 4-second delay before navigation
               await Future.delayed(Duration(seconds: 4));
@@ -898,8 +910,9 @@ class AccountController extends GetxController {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1), // Thicker black border when focused
+                  color: Colors.black,
+                  width: 1,
+                ), // Thicker black border when focused
               ),
             ),
             inputFormatters: [
@@ -966,8 +979,10 @@ class AccountController extends GetxController {
                 barrierDismissible: false,
               );
 
-              bool isValid =
-                  await authController.verifyPassword(email, password);
+              bool isValid = await authController.verifyPassword(
+                email,
+                password,
+              );
 
               // Simulate a 4-second delay before navigation
               await Future.delayed(Duration(seconds: 4));
@@ -1031,7 +1046,10 @@ class AccountController extends GetxController {
 
               if (publicKey.isEmpty) {
                 _showAlertDialog(
-                    "Error", "Please enter a public key", Colors.red);
+                  "Error",
+                  "Please enter a public key",
+                  Colors.red,
+                );
                 return;
               }
 
@@ -1106,12 +1124,18 @@ class AccountController extends GetxController {
                     } else {
                       Get.back();
                       _showAlertDialog(
-                          "Error", "Host details not found.", Colors.red);
+                        "Error",
+                        "Host details not found.",
+                        Colors.red,
+                      );
                     }
                   } else {
                     Get.back();
-                    _showAlertDialog("Error",
-                        "Public key does not match host address.", Colors.red);
+                    _showAlertDialog(
+                      "Error",
+                      "Public key does not match host address.",
+                      Colors.red,
+                    );
                   }
                 } else {
                   Get.back();
@@ -1153,9 +1177,10 @@ void _showAlertDialog(String title, String message, Color color) {
             Text(
               title,
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             SizedBox(height: 10),
             Text(
@@ -1168,7 +1193,8 @@ void _showAlertDialog(String title, String message, Color color) {
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () => Get.back(),
               child: Text("OK", style: TextStyle(color: Colors.white)),

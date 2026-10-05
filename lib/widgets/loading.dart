@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:realstore/constant/colors.dart';
 
 class LoadingContainer extends StatelessWidget {
   final RxDouble loadingProgress;

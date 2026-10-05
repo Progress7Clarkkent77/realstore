@@ -1,15 +1,11 @@
 import 'dart:async';
 
-import 'package:realstore/platformControllers/domainController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-
-import 'dart:async';
+import 'package:realstore/live/liveControllers/storeConfig.dart';
 
 class EcommerceAdminDashboardController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  final DomainController domainCtrl = Get.find<DomainController>();
 
   final RxBool isLoading = true.obs;
 
@@ -19,107 +15,67 @@ class EcommerceAdminDashboardController extends GetxController {
 
   final RxDouble revenue = 0.0.obs;
 
-  StreamSubscription? _productsSub;
-  StreamSubscription? _ordersSub;
-  Worker? _orgWorker;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _productsSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _ordersSub;
 
   @override
   void onInit() {
     super.onInit();
-
-    _initializeDashboard();
+    startRealtimeListeners();
   }
 
-  void _initializeDashboard() {
-    if (domainCtrl.organizationId.value.isNotEmpty) {
-      startRealtimeListeners();
-      return;
-    }
-
-    _orgWorker = ever(domainCtrl.organizationId, (String orgId) {
-      if (orgId.isNotEmpty) {
-        startRealtimeListeners();
-        _orgWorker?.dispose();
-      }
-    });
-  }
-
+  /// (Re)starts the realtime listeners. Safe to call multiple times.
   void startRealtimeListeners() {
-    final orgId = domainCtrl.organizationId.value;
-
-    if (orgId.isEmpty) return;
-
     isLoading.value = true;
 
     _productsSub?.cancel();
     _ordersSub?.cancel();
 
-    //---------------------------------------
-    // PRODUCTS REALTIME
-    //---------------------------------------
-
     _productsSub = _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('products')
+        .collection(StoreConfig.productsCollection)
         .snapshots()
-        .listen((snapshot) {
-          productCount.value = snapshot.docs.length;
-        });
-
-    //---------------------------------------
-    // ORDERS REALTIME
-    //---------------------------------------
+        .listen(
+          (snapshot) => productCount.value = snapshot.docs.length,
+          onError: (Object e) => Get.log('Dashboard products error: $e'),
+        );
 
     _ordersSub = _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('orders')
+        .collection(StoreConfig.ordersCollection)
         .snapshots()
-        .listen((snapshot) {
-          orderCount.value = snapshot.docs.length;
+        .listen(
+          (snapshot) {
+            final customers = <String>{};
+            double totalRevenue = 0;
 
-          final customers = <String>{};
+            for (final doc in snapshot.docs) {
+              final data = doc.data();
 
-          double totalRevenue = 0;
+              final customerUid = (data['customerUid'] ?? '').toString();
+              if (customerUid.isNotEmpty) customers.add(customerUid);
 
-          for (final doc in snapshot.docs) {
-            final data = doc.data();
-
-            final customerId = data['customerId'] ?? '';
-
-            if (customerId.toString().isNotEmpty) {
-              customers.add(customerId);
+              // Only delivered orders count towards revenue.
+              if (data['delivered'] == true) {
+                totalRevenue += (data['totalAmount'] as num? ?? 0).toDouble();
+              }
             }
 
-            final delivered = data['isDelivered'] ?? false;
-
-            if (delivered == true) {
-              totalRevenue += (data['totalAmount'] ?? 0).toDouble();
-            }
-          }
-
-          customerCount.value = customers.length;
-
-          revenue.value = totalRevenue;
-
-          isLoading.value = false;
-        });
+            orderCount.value = snapshot.docs.length;
+            customerCount.value = customers.length;
+            revenue.value = totalRevenue;
+            isLoading.value = false;
+          },
+          onError: (Object e) {
+            Get.log('Dashboard orders error: $e');
+            isLoading.value = false;
+          },
+        );
   }
 
-  Future<void> loadDashboard() async {
-    startRealtimeListeners();
-  }
+  Future<void> loadDashboard() async => startRealtimeListeners();
 
   String formatAmount(double value) {
-    if (value >= 1000000) {
-      return '₦${(value / 1000000).toStringAsFixed(1)}M';
-    }
-
-    if (value >= 1000) {
-      return '₦${(value / 1000).toStringAsFixed(1)}K';
-    }
-
+    if (value >= 1000000) return '₦${(value / 1000000).toStringAsFixed(1)}M';
+    if (value >= 1000) return '₦${(value / 1000).toStringAsFixed(1)}K';
     return '₦${value.toStringAsFixed(2)}';
   }
 
@@ -127,7 +83,6 @@ class EcommerceAdminDashboardController extends GetxController {
   void onClose() {
     _productsSub?.cancel();
     _ordersSub?.cancel();
-    _orgWorker?.dispose();
     super.onClose();
   }
 }

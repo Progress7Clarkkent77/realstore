@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrderModel {
   final String id;
 
-  final String organizationId;
   final String customerUid;
 
   final String customerName;
@@ -14,6 +13,9 @@ class OrderModel {
   final double subtotal;
   final double deliveryFee;
   final double totalAmount;
+
+  /// 'enugu' or 'outside' ('' for older orders).
+  final String deliveryZone;
 
   final bool delivered;
 
@@ -27,7 +29,7 @@ class OrderModel {
 
   OrderModel({
     required this.id,
-    required this.organizationId,
+
     required this.customerUid,
     required this.customerName,
     required this.customerPhoneNumber,
@@ -35,6 +37,7 @@ class OrderModel {
     required this.subtotal,
     required this.deliveryFee,
     required this.totalAmount,
+    this.deliveryZone = '',
     required this.delivered,
     required this.currentLocation,
     required this.status,
@@ -42,10 +45,17 @@ class OrderModel {
     this.createdAt,
   });
 
+  /// Human readable delivery location ('' for older orders).
+  String get deliveryZoneLabel => deliveryZone == 'outside'
+      ? 'Outside Enugu State'
+      : deliveryZone == 'enugu'
+      ? 'Within Enugu State'
+      : '';
+
   factory OrderModel.fromMap(String id, Map<String, dynamic> data) {
     return OrderModel(
       id: id,
-      organizationId: data['organizationId'] ?? '',
+
       customerUid: data['customerUid'] ?? '',
       customerName: data['customerName'] ?? '',
       customerPhoneNumber: data['customerPhoneNumber'] ?? '',
@@ -53,6 +63,7 @@ class OrderModel {
       subtotal: (data['subtotal'] ?? 0).toDouble(),
       deliveryFee: (data['deliveryFee'] ?? 0).toDouble(),
       totalAmount: (data['totalAmount'] ?? 0).toDouble(),
+      deliveryZone: data['deliveryZone'] ?? '',
       delivered: data['delivered'] ?? false,
       currentLocation: data['currentLocation'] ?? '',
       status: data['status'] ?? 'Pending',
@@ -65,7 +76,6 @@ class OrderModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'organizationId': organizationId,
       'customerUid': customerUid,
       'customerName': customerName,
       'customerPhoneNumber': customerPhoneNumber,
@@ -73,6 +83,7 @@ class OrderModel {
       'subtotal': subtotal,
       'deliveryFee': deliveryFee,
       'totalAmount': totalAmount,
+      'deliveryZone': deliveryZone,
       'delivered': delivered,
       'currentLocation': currentLocation,
       'status': status,

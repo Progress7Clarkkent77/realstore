@@ -1,4 +1,12 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:realstore/live/liveControllers/reward_controller.dart';
+import 'package:realstore/live/liveControllers/storeConfig.dart';
+import 'package:realstore/live/liveControllers/theme_controller.dart';
+import 'package:realstore/live/pages/adminDashboard.dart';
 import 'package:realstore/live/pages/ecommerceHomePage.dart';
+import 'package:realstore/live/pages/term_of_use.dart';
 import 'package:realstore/live/userAuth/authpages.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +17,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'dart:io' show Platform;
+
+import 'package:realstore/widgets/loading_dialogue.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -23,9 +33,30 @@ class AuthController extends GetxController {
 
   RxBool isVerified = false.obs;
 
+  /// True when the signed-in user is the store admin
+  /// (see [StoreConfig.adminEmail]). UI convenience only; real access
+  /// control is enforced by Firestore security rules.
+  final RxBool isAdmin = false.obs;
+
+  final RxBool _isAuthenticated = false.obs;
+
+  /// Reactive: reading this inside an Obx() rebuilds the widget whenever the
+  /// user signs in or out.
+  bool get isAuthenticated => _isAuthenticated.value;
+
+  StreamSubscription<User?>? _authSub;
+
   @override
   void onInit() {
     super.onInit();
+
+    // Keep isAdmin in sync on app start, login, logout and account switch.
+    isAdmin.value = StoreConfig.isAdminEmail(_auth.currentUser?.email);
+    _isAuthenticated.value = _auth.currentUser != null;
+    _authSub = _auth.authStateChanges().listen((user) {
+      isAdmin.value = StoreConfig.isAdminEmail(user?.email);
+      _isAuthenticated.value = user != null;
+    });
 
     fetchVerificationStatus();
 
@@ -42,6 +73,12 @@ class AuthController extends GetxController {
         'fcmUpdatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     });
+  }
+
+  @override
+  void onClose() {
+    _authSub?.cancel();
+    super.onClose();
   }
 
   Future<void> login(String email, String password) async {
@@ -153,7 +190,15 @@ class AuthController extends GetxController {
       final themeCtrl = Get.put(ThemeController());
       await themeCtrl.loadTheme();
 
-      Get.offNamed('/home');
+      // Route by role: the store admin lands on the dashboard,
+      // everyone else goes to the storefront.
+      isAdmin.value = StoreConfig.isAdminEmail(userCredential.user?.email);
+
+      if (isAdmin.value) {
+        Get.offAll(() => EcommerceAdminDashboardPage());
+      } else {
+        Get.offNamed('/onboarding');
+      }
     } catch (e) {
       if (Get.isDialogOpen == true) Get.back();
       Get.snackbar(
@@ -196,7 +241,7 @@ class AuthController extends GetxController {
       Get.back();
 
       // Navigate to login screen & clear history
-      Get.offAllNamed('/login');
+      Get.offAllNamed('/home');
     } catch (e) {
       Get.back(); // Close dialog if there's an error
       Get.snackbar("Logout Error", "Failed to log out. Please try again.");
@@ -401,7 +446,7 @@ class AuthController extends GetxController {
     try {
       await _auth.currentUser?.updatePassword(newPassword);
       Get.snackbar("Success", "Password changed successfully.");
-      Get.toNamed('/elogin');
+      Get.toNamed('/login');
     } catch (e) {
       Get.snackbar("Change Password Error", e.toString());
     } finally {

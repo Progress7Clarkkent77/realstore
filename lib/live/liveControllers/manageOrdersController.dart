@@ -1,18 +1,20 @@
-import 'package:realstore/live/models/orderModel.dart';
-import 'package:realstore/platformControllers/domainController.dart';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:realstore/live/liveControllers/storeConfig.dart';
+
+import 'package:realstore/live/models/orderModel.dart';
 
 class ManageOrdersController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final DomainController domainCtrl = Get.find<DomainController>();
-
   final RxBool isLoading = false.obs;
-
   final RxList<OrderModel> orders = <OrderModel>[].obs;
 
-  final trackingLocations = [
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _ordersSub;
+
+  final List<String> trackingLocations = const [
     'Order Received',
     'Processing',
     'Packed',
@@ -26,26 +28,36 @@ class ManageOrdersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
     listenOrders();
   }
 
+  @override
+  void onClose() {
+    _ordersSub?.cancel();
+    super.onClose();
+  }
+
   void listenOrders() {
-    final orgId = domainCtrl.organizationId.value;
+    isLoading.value = true;
 
-    if (orgId.isEmpty) return;
+    _ordersSub?.cancel();
 
-    _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('orders')
+    _ordersSub = _firestore
+        .collection(StoreConfig.ordersCollection)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .listen((snapshot) {
-          orders.value = snapshot.docs
-              .map((e) => OrderModel.fromMap(e.id, e.data()))
-              .toList();
-        });
+        .listen(
+          (snapshot) {
+            orders.assignAll(
+              snapshot.docs.map((e) => OrderModel.fromMap(e.id, e.data())),
+            );
+            isLoading.value = false;
+          },
+          onError: (Object e) {
+            isLoading.value = false;
+            Get.snackbar('Error', 'Unable to load orders');
+          },
+        );
   }
 
   Future<void> updateOrder({
@@ -54,20 +66,20 @@ class ManageOrdersController extends GetxController {
     required String currentLocation,
     required String status,
   }) async {
-    final orgId = domainCtrl.organizationId.value;
+    try {
+      await _firestore
+          .collection(StoreConfig.ordersCollection)
+          .doc(orderId)
+          .update({
+            'delivered': delivered,
+            'status': status,
+            'currentLocation': currentLocation,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
 
-    await _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('orders')
-        .doc(orderId)
-        .update({
-          'delivered': delivered,
-          'status': status, // ✅ ADD THIS
-          'currentLocation': currentLocation,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-
-    Get.snackbar('Success', 'Order updated');
+      Get.snackbar('Success', 'Order updated');
+    } catch (e) {
+      Get.snackbar('Update Failed', e.toString());
+    }
   }
 }

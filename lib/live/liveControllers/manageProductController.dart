@@ -1,83 +1,81 @@
-import 'package:realstore/live/models/productModel.dart';
-import 'package:realstore/platformControllers/domainController.dart';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:realstore/live/liveControllers/storeConfig.dart';
+
+import 'package:realstore/live/models/productModel.dart';
 
 class ManageProductsController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final DomainController domainCtrl = Get.find<DomainController>();
-
   final RxBool isLoading = false.obs;
-
   final RxList<ProductModel> products = <ProductModel>[].obs;
-
   final RxString searchQuery = ''.obs;
 
-  List<ProductModel> get filteredProducts {
-    if (searchQuery.value.isEmpty) {
-      return products;
-    }
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _productsSub;
 
-    return products.where((p) {
-      return p.name.toLowerCase().contains(searchQuery.value.toLowerCase());
-    }).toList();
+  CollectionReference<Map<String, dynamic>> get _productsRef =>
+      _firestore.collection(StoreConfig.productsCollection);
+
+  List<ProductModel> get filteredProducts {
+    final query = searchQuery.value.trim().toLowerCase();
+
+    if (query.isEmpty) return products;
+
+    return products.where((p) => p.name.toLowerCase().contains(query)).toList();
   }
 
   @override
   void onInit() {
     super.onInit();
-
     listenProducts();
   }
 
+  @override
+  void onClose() {
+    _productsSub?.cancel();
+    super.onClose();
+  }
+
   void listenProducts() {
-    final orgId = domainCtrl.organizationId.value;
-
-    if (orgId.isEmpty) return;
-
     isLoading.value = true;
 
-    _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('products')
+    _productsSub?.cancel();
+
+    _productsSub = _productsRef
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .listen((snapshot) {
-          products.value = snapshot.docs
-              .map((e) => ProductModel.fromMap(e.id, e.data()))
-              .toList();
-
-          isLoading.value = false;
-        });
+        .listen(
+          (snapshot) {
+            products.assignAll(
+              snapshot.docs.map((e) => ProductModel.fromMap(e.id, e.data())),
+            );
+            isLoading.value = false;
+          },
+          onError: (Object e) {
+            isLoading.value = false;
+            Get.snackbar('Error', 'Unable to load products');
+          },
+        );
   }
 
   Future<void> deleteProduct(String productId) async {
-    final orgId = domainCtrl.organizationId.value;
-
-    await _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('products')
-        .doc(productId)
-        .delete();
-
-    await _firestore.collection('organizations').doc(orgId).update({
-      'productCount': FieldValue.increment(-1),
-    });
-
-    Get.snackbar('Success', 'Product deleted');
+    try {
+      await _productsRef.doc(productId).delete();
+      Get.snackbar('Success', 'Product deleted');
+    } catch (e) {
+      Get.snackbar('Delete Failed', e.toString());
+    }
   }
 
   Future<void> toggleProductStatus(ProductModel product) async {
-    final orgId = domainCtrl.organizationId.value;
-
-    await _firestore
-        .collection('organizations')
-        .doc(orgId)
-        .collection('products')
-        .doc(product.id)
-        .update({'isActive': !product.isActive});
+    try {
+      await _productsRef.doc(product.id).update({
+        'isActive': !product.isActive,
+      });
+    } catch (e) {
+      Get.snackbar('Update Failed', e.toString());
+    }
   }
 }
