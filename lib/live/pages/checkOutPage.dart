@@ -130,11 +130,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     FocusScope.of(context).unfocus();
 
-    await orderCtrl.placeOrder(
-      phone: phoneCtrl.text.trim(),
-      address: addressCtrl.text.trim(),
-      rememberShipping: remember.value,
-    );
+    // await orderCtrl.placeOrder(
+    //   phone: phoneCtrl.text.trim(),
+    //   address: addressCtrl.text.trim(),
+    //   rememberShipping: remember.value,
+    // );
   }
 
   //==================================================
