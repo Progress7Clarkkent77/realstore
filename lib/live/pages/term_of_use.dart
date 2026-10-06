@@ -296,181 +296,235 @@ class _TermsOfUseScreenState extends State<TermsOfUseScreen> {
 }
 
 const String _termsOfUseText = '''
-Textido Terms of Use
+RealStore Terms of Use
 
-Last Updated: August 3, 2026
+Last Updated: October 6, 2026
 
-Welcome to Textido, a text-first social platform ("Textido," "we," "our," or "us"). By creating an account, accessing, or using Textido, you acknowledge that you have read, understood, and agree to these Terms of Use. If you do not agree with these Terms, you may not register for or use the platform.
+Welcome to RealStore, an e-commerce product discovery and order-request platform operated by AfiaSplendid LTD ("AfiaSplendid," "RealStore," "we," "our," or "us").
 
-1. Eligibility
+The RealStore iOS application allows customers to browse products, view product information, add products to a cart, and submit order requests.
 
-You must be at least 13 years of age, or the minimum age required by the laws of your country, to use Textido. By using the platform, you represent that you meet these requirements and have the legal capacity to enter into this agreement.
+At this time, the RealStore iOS application does not process payments directly within the app. When you submit an order request, the order information is sent to the RealStore administrator through WhatsApp so that payment, order confirmation, delivery arrangements, and other transaction details can be handled outside the application.
 
-2. Acceptance of These Terms
+By accessing or using RealStore, you acknowledge that you have read, understood, and agree to these Terms of Use. If you do not agree with these Terms, you must not use RealStore.
 
-By selecting "I Agree", registering an account, or continuing to use Textido, you agree to be legally bound by these Terms of Use, our Privacy Policy, Community Guidelines, and any additional policies published within the platform.
+1. About RealStore
 
-3. Purpose of Textido
+RealStore is operated by AfiaSplendid LTD and provides customers with a convenient way to:
 
-Textido is a community platform designed to enable users to:
+- Browse products offered by RealStore.
+- View product descriptions, images, prices, and availability.
+- Search for products.
+- Add products to a shopping cart.
+- Review selected products and quantities.
+- Submit an order request.
+- Contact RealStore regarding products and orders.
+- Receive information about available products and services.
 
-- Share text, images, and other supported content.
-- Join and participate in communities.
-- Communicate with other users.
-- Discover information and opportunities.
-- Engage in conversations respectfully.
+RealStore is not an open marketplace for independent third-party sellers.
 
-4. Community Standards
+Products displayed through RealStore are offered, sourced, or managed by AfiaSplendid LTD unless otherwise stated.
 
-To maintain a safe and respectful environment, every user must:
+2. Eligibility
 
-- Treat others with respect and dignity.
-- Share lawful and truthful content.
-- Respect the rights and privacy of others.
-- Follow all applicable laws.
-- Use Textido responsibly.
+You must be at least 18 years of age, or the minimum legal age required to enter into a binding commercial transaction in your jurisdiction, to independently place an order through RealStore.
 
-You are solely responsible for the content you create, upload, or share.
+If you are under the applicable age, you may only use RealStore with the involvement and permission of a parent or legal guardian where permitted by law.
 
-5. Prohibited Conduct
+3. Acceptance of These Terms
 
-You agree not to:
+By accessing RealStore, creating an account, adding products to your cart, submitting an order request, or otherwise using the application, you agree to these Terms of Use and our Privacy Policy and Return & Refund Policy.
 
-- Post hate speech or discriminatory content.
-- Harass, threaten, bully, or intimidate others.
-- Share sexually explicit, exploitative, or illegal content.
-- Promote violence, terrorism, or criminal activity.
-- Upload viruses or malicious software.
-- Impersonate another person or organization.
-- Publish fraudulent or misleading information.
-- Send spam or unsolicited advertisements.
-- Attempt unauthorized access to accounts or systems.
-- Interfere with the security or operation of Textido.
-- Buy, sell, or transfer accounts without authorization.
+4. Product Information
 
-Violations may result in immediate enforcement action.
+We make reasonable efforts to ensure that product names, descriptions, images, prices, specifications, and availability displayed in RealStore are accurate.
 
-6. Zero-Tolerance Policy
+However:
 
-Textido maintains a strict zero-tolerance policy for objectionable content and abusive behavior.
+- Product images may differ slightly from the actual product.
+- Product packaging may change.
+- Product availability may change.
+- Product information may occasionally contain errors or omissions.
+- Prices may change without prior notice.
 
-Users must not create, upload, publish, promote, or distribute content that includes, but is not limited to:
+We reserve the right to correct errors, update information, change prices, modify product availability, or remove products from RealStore.
 
-- Hate speech or discrimination.
-- Harassment, bullying, intimidation, or threats.
-- Sexually explicit, exploitative, or abusive material.
-- Violence or content encouraging violence.
-- Terrorist or extremist content.
-- Illegal activities or criminal conduct.
-- Fraud, scams, phishing, or impersonation.
-- Content intended to exploit, harm, or endanger others.
-Any content that violates applicable laws or these Terms of Use.
+5. Shopping Cart
 
-Any user found violating this policy may have their content removed immediately and may receive warnings, temporary restrictions, account suspension, or permanent account termination without prior notice.
+The shopping cart allows you to select products and quantities before submitting an order request.
 
-Where required by law, Textido may report unlawful activities to the appropriate authorities.
+Adding products to the cart does not reserve or guarantee the availability of those products.
 
-By accepting these Terms of Use, you acknowledge and agree to comply with this Zero-Tolerance Policy.
+Product availability will be confirmed during the order-processing process.
 
-7. User-Generated Content
+6. Order Requests
 
-You retain ownership of the content you create.
+When you tap the checkout or order button in the iOS application, the selected order information may be prepared and sent to the RealStore administrator through WhatsApp.
 
-By posting content on Textido, you grant Textido a worldwide, non-exclusive, royalty-free license to host, display, distribute, process, and transmit your content solely for the purpose of operating, maintaining, and improving the platform.
+The information may include:
 
-You represent that:
+- Selected products.
+- Product quantities.
+- Order total or displayed product prices.
+- Customer name or account information where available.
+- Contact information.
+- Delivery information where provided.
+- Other information necessary to process the order request.
 
-- You own the content or have permission to share it.
-- Your content does not violate the rights of others.
-- Your content complies with these Terms of Use.
+Submitting an order request does not automatically mean that a final purchase contract has been completed.
 
-8. Reporting and Moderation
+The RealStore administrator will communicate with the customer to confirm product availability, final pricing, delivery arrangements, payment instructions, and other applicable transaction details.
 
-Textido is committed to maintaining a safe and respectful community.
+7. Payments and Transactions
 
-Users may report posts, channels, comments, or accounts they believe violate these Terms of Use or Community Guidelines.
+The RealStore iOS application does not currently process payments directly inside the application.
 
-Reported content may be reviewed by our moderation team, and appropriate action may include:
+RealStore does not provide an in-app card payment or checkout system on the iOS version at this time.
 
-- Removing content.
-- Limiting content visibility.
-- Issuing warnings.
-- Suspending accounts.
-- Permanently terminating accounts.
-- Reporting illegal activities to relevant authorities where required by law.
+After an order request is submitted, payment and transaction arrangements are handled outside the application through communication with the RealStore administrator.
 
-9. Blocking Users
+Customers may receive payment instructions through the official communication channel provided by RealStore.
 
-Users may block other users to prevent unwanted interactions.
+Customers should not send payment information or money to unofficial individuals or accounts claiming to represent RealStore.
 
-Blocking may prevent:
+A payment should only be made after the customer has confirmed the order and received appropriate payment instructions from RealStore.
 
-- Direct messaging.
-- Viewing certain content.
-- Future interactions, as determined by platform functionality.
+8. No In-App Payment Processing
 
-10. Account Suspension and Termination
+The RealStore iOS application does not intentionally collect or store customers' card numbers, CVV numbers, PINs, passwords, or other sensitive payment credentials for processing purchases inside the app.
 
-We reserve the right to suspend or permanently terminate accounts that:
+Any payment service used outside the application may have its own terms, privacy policy, and security practices.
 
-- Violate these Terms of Use.
-- Repeatedly receive valid abuse reports.
-- Engage in fraudulent or illegal activities.
-- Threaten the safety, security, or integrity of the platform or its users.
+9. Order Confirmation
 
-Serious violations may result in immediate account termination without prior notice.
+An order request submitted through the application is subject to confirmation.
 
-11. Intellectual Property
+Before completing a transaction, RealStore may confirm:
 
-The Textido name, logo, software, design, graphics, and platform features are protected by applicable intellectual property laws.
+- Product availability.
+- Product quantity.
+- Final price.
+- Delivery location.
+- Delivery charges where applicable.
+- Payment method.
+- Expected delivery timeframe.
+- Other relevant order details.
 
-You may not copy, modify, distribute, reverse engineer, or exploit any part of the platform without prior written permission.
+RealStore reserves the right to decline or modify an order request where a product is unavailable, information is incorrect, pricing has changed, or other circumstances prevent fulfillment.
 
-12. Privacy
+10. Delivery
 
-Your use of Textido is also governed by our Privacy Policy, which explains how your information is collected, used, stored, and protected.
+Delivery arrangements are handled outside the application after communication with RealStore.
 
-13. Availability of Service
+Delivery may be carried out directly by RealStore or through third-party logistics or delivery providers.
 
-We strive to provide reliable service but do not guarantee uninterrupted availability.
+Delivery times may vary depending on:
 
-We may modify, suspend, or discontinue features to improve the platform, maintain security, or comply with legal requirements.
+- Product availability.
+- Customer location.
+- Delivery provider availability.
+- Transportation conditions.
+- Public holidays.
+- Weather.
+- Other circumstances outside our reasonable control.
 
-14. Disclaimer
+Any delivery timeframe communicated to a customer is an estimate unless expressly stated otherwise.
 
-Textido is provided "as is" and "as available."
+11. Customer Responsibilities
+
+Customers must provide accurate information when submitting an order request.
+
+Customers must not:
+
+- Submit fraudulent orders.
+- Provide false information.
+- Attempt unauthorized access to RealStore.
+- Abuse order, return, or refund processes.
+- Use stolen payment methods.
+- Impersonate another person.
+- Interfere with the operation or security of RealStore.
+- Use RealStore for unlawful purposes.
+
+12. Returns and Refunds
+
+Returns, replacements, and refunds are governed by our Return & Refund Policy.
+
+Customers should contact RealStore through the official contact channel provided if they receive a damaged, defective, incorrect, incomplete, or otherwise qualifying product.
+
+13. Intellectual Property
+
+RealStore, including its name, logo, software, design, graphics, interface, product presentation, and other original materials, is owned by or licensed to AfiaSplendid LTD and is protected by applicable intellectual property laws.
+
+You may not copy, modify, distribute, reverse engineer, reproduce, or commercially exploit any part of RealStore without prior written permission.
+
+14. Third-Party Services
+
+RealStore may use or direct users to third-party services, including WhatsApp, delivery providers, payment providers, hosting services, or other external services.
+
+These services operate independently and may have their own terms and privacy policies.
+
+When you communicate with RealStore through WhatsApp, that communication is subject to WhatsApp's applicable terms and privacy practices.
+
+AfiaSplendid LTD is not responsible for independent third-party services outside its reasonable control.
+
+15. Availability of Service
+
+We aim to keep RealStore available and functional but do not guarantee uninterrupted or error-free operation.
+
+We may temporarily suspend or restrict access for:
+
+- Maintenance.
+- Security updates.
+- Technical issues.
+- Platform improvements.
+- Legal or regulatory requirements.
+- Other operational reasons.
+
+16. Disclaimer
+
+RealStore is provided on an "as is" and "as available" basis to the fullest extent permitted by applicable law.
 
 We do not guarantee that:
 
-- The platform will always be available.
-- All user-generated content is accurate or reliable.
-- The platform will always operate without technical issues.
+- All products will always be available.
+- Product information will always be completely error-free.
+- Prices will never change.
+- Every order request will be accepted.
+- Delivery estimates will always be met.
+- The application will always operate without interruption.
 
-15. Limitation of Liability
+17. Limitation of Liability
 
-To the fullest extent permitted by law, Textido shall not be liable for:
+To the fullest extent permitted by applicable law, AfiaSplendid LTD and RealStore shall not be liable for indirect, incidental, consequential, special, or other damages arising from or related to:
 
-- User-generated content.
-- Indirect or consequential damages.
-- Loss of data or profits.
-- Unauthorized access to user accounts.
-- Service interruptions beyond our reasonable control.
+- Use or inability to use RealStore.
+- Third-party services.
+- Delivery delays outside our reasonable control.
+- Communication failures involving third-party services.
+- Technical interruptions.
+- Unauthorized access caused by circumstances outside our reasonable control.
 
-16. Changes to These Terms
+Nothing in these Terms excludes or limits liability that cannot legally be excluded or limited.
+
+18. Changes to These Terms
 
 We may update these Terms of Use from time to time.
 
-When significant changes are made, users may be required to review and accept the updated Terms before continuing to use the platform.
+Where significant changes are made, we may notify users through the application or other reasonable communication methods.
 
-17. Governing Law
+Your continued use of RealStore after updated Terms become effective constitutes acceptance of the revised Terms, where permitted by law.
 
-These Terms shall be governed by the applicable laws of the jurisdiction in which Textido operates, without regard to conflict of law principles.
+19. Governing Law
 
-18. Contact Us
+These Terms shall be governed by the applicable laws of the jurisdiction in which AfiaSplendid LTD operates, subject to any mandatory consumer rights and protections that may apply.
 
-If you have questions regarding these Terms of Use, please contact us:
+20. Contact Us
 
-Email: progressclarkkent@gmail.com
+For questions about RealStore, products, orders, payments, delivery, returns, or refunds, please contact:
 
-Website: https://textido.com
+AfiaSplendid LTD
+
+Email: contact@afiasplendid.co.site
+
+Website: https://afiasplendid.ltd
 ''';
