@@ -525,7 +525,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               ),
               child: Row(
                 children: [
-                  _barItem(Icons.policy_outlined, "Policy", _showPolicy),
+                  _barItem(Icons.policy_outlined, "Policy", _openPrivacyPolicy),
                   _barItem(Icons.info_outline_rounded, "About Us", _showAbout),
                   _barItem(
                     Icons.support_agent_rounded,
@@ -652,22 +652,31 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     ),
   );
 
-  // NOTE: replace the wording below with your real policy / about text.
-  void _showPolicy() => _showSheet(
-    title: "Policy",
-    icon: Icons.policy_outlined,
-    children: [
-      _sheetText(
-        "Orders: all orders are confirmed once payment is received and are processed as quickly as possible.",
-      ),
-      _sheetText(
-        "Returns & refunds: if an item arrives damaged or not as described, contact support promptly so we can resolve it.",
-      ),
-      _sheetText(
-        "Privacy: we only use your information to process orders and improve your experience. We never sell your data.",
-      ),
-    ],
-  );
+  static const _privacyPolicyUrl =
+      'https://docs.google.com/document/d/e/2PACX-1vRzYLA43UaBCW2Y-E96jcf7ue821JxfvyH8iH4HEumSQE9NkgSI8aBt23B2wgjZdymzZJxWDLzYzVPN/pub';
+
+  /// Opens the Privacy Policy in the browser.
+  Future<void> _openPrivacyPolicy() async {
+    var opened = false;
+
+    try {
+      opened = await launchUrl(
+        Uri.parse(_privacyPolicyUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      opened = false;
+    }
+
+    if (!opened) {
+      Get.snackbar(
+        'Privacy Policy',
+        'Could not open the link. Please try again.',
+        backgroundColor: p.snackBg,
+        colorText: p.snackText,
+      );
+    }
+  }
 
   void _showAbout() => _showSheet(
     title: "About Us",

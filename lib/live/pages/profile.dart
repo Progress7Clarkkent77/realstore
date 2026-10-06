@@ -10,6 +10,7 @@ import 'package:realstore/live/pages/avatar_screen.dart';
 import 'package:realstore/live/pages/ecommerce_routes.dart';
 import 'package:realstore/live/userAuth/account_controller.dart';
 import 'package:realstore/live/userAuth/authController.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,6 +33,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   final RxBool referLoading = true.obs;
 
   static const Color _danger = Color(0xFFE5484D);
+
+  static const String _privacyPolicyUrl =
+      'https://docs.google.com/document/d/e/2PACX-1vRzYLA43UaBCW2Y-E96jcf7ue821JxfvyH8iH4HEumSQE9NkgSI8aBt23B2wgjZdymzZJxWDLzYzVPN/pub';
+
+  static const String _refundPolicyUrl =
+      'https://docs.google.com/document/d/e/2PACX-1vTbMvgvwBPlNvqq2GN9llML1TOFkifEfmR6qtAE0bRy5ZaGN2_lcA8xo0GU0TEZNiVT6OtlluWcMaS8/pub';
 
   @override
   bool get wantKeepAlive => true;
@@ -101,6 +108,23 @@ class _ProfileScreenState extends State<ProfileScreen>
   //==================================================
   // FEEDBACK & DIALOGS
   //==================================================
+
+  Future<void> _openLink(String url, String title) async {
+    var opened = false;
+
+    try {
+      opened = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      opened = false;
+    }
+
+    if (!opened) {
+      _snack(title, 'Could not open the link. Please try again.');
+    }
+  }
 
   void _snack(String title, String message) {
     final p = _P(themeCtrl.isDarkMode.value);
@@ -303,6 +327,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                   _label('Invite & earn', p),
                   const SizedBox(height: 12),
                   _referralCard(p),
+                  const SizedBox(height: 28),
+                  _label('Policies', p),
+                  const SizedBox(height: 12),
+                  _group(p, [
+                    _tile(
+                      p,
+                      icon: Icons.assignment_return_outlined,
+                      title: 'Return & refund policy',
+                      subtitle: 'How returns and refunds work',
+                      onTap: () =>
+                          _openLink(_refundPolicyUrl, 'Return & Refund Policy'),
+                    ),
+                    _tile(
+                      p,
+                      icon: Icons.privacy_tip_outlined,
+                      title: 'Privacy policy',
+                      subtitle: 'How we handle your information',
+                      onTap: () =>
+                          _openLink(_privacyPolicyUrl, 'Privacy Policy'),
+                    ),
+                  ]),
                   const SizedBox(height: 28),
                   _label('Security', p),
                   const SizedBox(height: 12),
