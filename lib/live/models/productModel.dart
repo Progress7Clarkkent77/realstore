@@ -1,6 +1,19 @@
 import 'dart:ui' show Color;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+
+//==================================================
+// BLACK FRIDAY (global switch)
+//==================================================
+
+/// Shared on/off flag. [ProductModel.price] reads it, so every screen that
+/// shows a price inside an Obx updates the moment the switch flips.
+class BlackFridayState {
+  BlackFridayState._();
+
+  static final RxBool active = false.obs;
+}
 
 //==================================================
 // DELIVERY ZONE
@@ -76,7 +89,15 @@ class ProductModel {
   final List<ProductColor> imageColors;
 
   final String category;
-  final double price;
+
+  /// Normal price (what is stored in Firestore as `price`).
+  final double regularPrice;
+
+  /// Seller price before the platform fee (null on older products).
+  final double? originalPrice;
+
+  /// Black Friday discount, 0–90 (%). Only applied while the switch is on.
+  final double blackFridayPercent;
 
   /// Legacy single delivery fee.
   final double deliveryFee;
@@ -97,7 +118,9 @@ class ProductModel {
     required this.description,
     required this.images,
     required this.category,
-    required this.price,
+    required double price,
+    this.originalPrice,
+    this.blackFridayPercent = 0,
     required this.deliveryFee,
     required this.stock,
     required this.isActive,
@@ -105,7 +128,8 @@ class ProductModel {
     this.imageColors = const [],
     double? deliveryFeeEnugu,
     double? deliveryFeeOutside,
-  }) : deliveryFeeEnugu = deliveryFeeEnugu ?? deliveryFee,
+  }) : regularPrice = price,
+       deliveryFeeEnugu = deliveryFeeEnugu ?? deliveryFee,
        deliveryFeeOutside = deliveryFeeOutside ?? deliveryFee;
 
   factory ProductModel.fromMap(String id, Map<String, dynamic> data) {
@@ -121,6 +145,8 @@ class ProductModel {
           .map((e) => ProductColor.fromMap(Map<String, dynamic>.from(e as Map)))
           .toList(),
       price: (data['price'] ?? 0).toDouble(),
+      originalPrice: (data['originalPrice'] as num?)?.toDouble(),
+      blackFridayPercent: (data['blackFridayPercent'] ?? 0).toDouble(),
       deliveryFee: legacyFee,
       // Older products only have one fee, so both zones fall back to it.
       deliveryFeeEnugu: (data['deliveryFeeEnugu'] ?? legacyFee).toDouble(),
@@ -138,7 +164,10 @@ class ProductModel {
       'category': category,
       'images': images,
       'imageColors': imageColors.map((c) => c.toMap()).toList(),
-      'price': price,
+      // always the NORMAL price — never the discounted one
+      'price': regularPrice,
+      'originalPrice': originalPrice,
+      'blackFridayPercent': blackFridayPercent,
       'deliveryFee': deliveryFee,
       'deliveryFeeEnugu': deliveryFeeEnugu,
       'deliveryFeeOutside': deliveryFeeOutside,
@@ -147,6 +176,27 @@ class ProductModel {
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
+
+  //--------------------------------------------------
+  // PRICE (normal / Black Friday)
+  //--------------------------------------------------
+
+  /// This product has a Black Friday discount set (applies only when the
+  /// global switch is on).
+  bool get hasBlackFridayDiscount => blackFridayPercent > 0;
+
+  /// True while Black Friday is live AND this product is discounted.
+  bool get isOnBlackFriday =>
+      BlackFridayState.active.value && hasBlackFridayDiscount;
+
+  /// Price the customer pays right now. Used by the cart, checkout and
+  /// orders, so switching Black Friday off restores every price at once.
+  double get price => isOnBlackFriday
+      ? (regularPrice * (1 - blackFridayPercent / 100)).roundToDouble()
+      : regularPrice;
+
+  /// Amount saved per unit while Black Friday is live.
+  double get savings => regularPrice - price;
 
   //--------------------------------------------------
   // DELIVERY

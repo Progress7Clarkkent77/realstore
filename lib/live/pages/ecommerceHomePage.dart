@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:realstore/live/liveControllers/blackFridayController.dart';
 import 'package:realstore/live/liveControllers/ecommerceCartController.dart';
 import 'package:realstore/live/liveControllers/ecommerceStoreController.dart';
 import 'package:realstore/live/liveControllers/status_controller.dart';
@@ -46,6 +47,9 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   // Support contact used by the Support sheet — change to your real details.
   static const _supportEmail = 'contact@afiasplendid.co.site';
 
+  static const Color _bfGold = Color(0xFFF5B301);
+  static const Color _bfRed = Color(0xFFE5484D);
+
   late final TextEditingController _searchCtrl;
 
   /// Target of the fly-to-cart animation (the cart icon in the app bar).
@@ -62,6 +66,9 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     cartCtrl = Get.find<EcommerceCartController>();
     statusCtrl = Get.find<StatusController>();
     statusCtrl.startProductLikesListener();
+
+    // Listens to the Black Friday switch for this customer (permanent).
+    BlackFridayController.ensure();
 
     // Local controller, seeded with any existing search text.
     _searchCtrl = TextEditingController(text: storeCtrl.searchText.value);
@@ -106,9 +113,18 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                   child: Obx(() {
                     final products = storeCtrl.filteredProducts;
 
+                    // Read here so the whole grid rebuilds when the admin
+                    // switches Black Friday on/off.
+                    final blackFriday = BlackFridayState.active.value;
+                    final maxOff = blackFriday
+                        ? _maxDiscount(storeCtrl.products)
+                        : 0.0;
+
                     return CustomScrollView(
                       physics: const BouncingScrollPhysics(),
                       slivers: [
+                        if (blackFriday && maxOff > 0)
+                          SliverToBoxAdapter(child: _blackFridayBanner(maxOff)),
                         if (products.isEmpty)
                           SliverToBoxAdapter(child: _emptyState())
                         else
@@ -817,6 +833,114 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     });
   }
 
+  // ───────────────────────── BLACK FRIDAY ─────────────────────────
+
+  double _maxDiscount(Iterable<ProductModel> products) => products.fold(
+    0.0,
+    (max, p) => p.blackFridayPercent > max ? p.blackFridayPercent : max,
+  );
+
+  String _pct(double v) =>
+      v == v.roundToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
+
+  Widget _bfBadge(ProductModel product) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: _bfGold,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        '-${_pct(product.blackFridayPercent)}%',
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+
+  Widget _blackFridayBanner(double maxOff) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF2A2005), Color(0xFF0B0B0C)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: _bfGold.withOpacity(0.65)),
+          boxShadow: [
+            BoxShadow(
+              color: _bfGold.withOpacity(0.22),
+              blurRadius: 22,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: _bfGold,
+                borderRadius: BorderRadius.circular(13),
+              ),
+              child: const Icon(
+                Icons.local_offer_rounded,
+                color: Colors.black,
+                size: 21,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'BLACK FRIDAY IS LIVE',
+                    style: TextStyle(
+                      color: _bfGold,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Prices shown are already reduced',
+                    style: TextStyle(color: Colors.white70, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: _bfGold,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'UP TO ${_pct(maxOff)}% OFF',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _productCard(ProductModel product) {
     return Container(
       decoration: BoxDecoration(
@@ -892,6 +1016,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                           right: 6,
                           child: _likeButton(product),
                         ),
+                        if (product.isOnBlackFriday)
+                          Positioned(top: 6, left: 6, child: _bfBadge(product)),
                       ],
                     ),
                   ),
@@ -922,13 +1048,32 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              _formatPrice(product.price),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                                color: p.text,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  _formatPrice(product.price),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: product.isOnBlackFriday
+                                        ? _bfRed
+                                        : p.text,
+                                  ),
+                                ),
+                                if (product.isOnBlackFriday) ...[
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _formatPrice(product.regularPrice),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: p.muted,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         ],

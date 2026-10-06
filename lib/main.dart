@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:realstore/live/liveControllers/balance_controller.dart';
+import 'package:realstore/live/liveControllers/blackFridayController.dart';
 import 'package:realstore/live/liveControllers/referral_controller.dart';
 import 'package:realstore/live/liveControllers/status_controller.dart';
 import 'package:realstore/live/liveControllers/theme_controller.dart';
@@ -90,6 +91,7 @@ class AppBinding extends Bindings {
     Get.lazyPut(() => ManageOrdersController(), fenix: true);
     Get.lazyPut(() => ManageProductsController(), fenix: true);
     Get.lazyPut(() => UploadProductController(), fenix: true);
+    Get.lazyPut(() => BlackFridayController(), fenix: true);
   }
 }
 
