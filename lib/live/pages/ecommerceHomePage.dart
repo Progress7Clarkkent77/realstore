@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:realstore/live/liveControllers/blackFridayController.dart';
@@ -52,6 +54,10 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
 
   late final TextEditingController _searchCtrl;
 
+  final ScrollController _scroll = ScrollController();
+  Worker? _resetWorker;
+  Timer? _searchDebounce;
+
   /// Target of the fly-to-cart animation (the cart icon in the app bar).
   final GlobalKey<CartFlyTargetState> _cartFlyKey =
       GlobalKey<CartFlyTargetState>();
@@ -72,12 +78,40 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
 
     // Local controller, seeded with any existing search text.
     _searchCtrl = TextEditingController(text: storeCtrl.searchText.value);
+
+    _scroll.addListener(_onScroll);
+
+    // New search / category → start again from the top.
+    _resetWorker = ever(storeCtrl.pageResetTick, (_) {
+      if (_scroll.hasClients) _scroll.jumpTo(0);
+    });
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    _resetWorker?.dispose();
+    _scroll.dispose();
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  /// Load the next 8 products shortly before the user reaches the bottom.
+  void _onScroll() {
+    if (!_scroll.hasClients) return;
+    final pos = _scroll.position;
+    if (pos.pixels >= pos.maxScrollExtent - 700) {
+      storeCtrl.loadMore();
+    }
+  }
+
+  /// On tall/wide screens 8 cards may not fill the viewport (nothing to
+  /// scroll) — keep loading until there is something to scroll.
+  void _fillIfShort() {
+    if (!mounted || !_scroll.hasClients) return;
+    if (_scroll.position.maxScrollExtent <= 0 && storeCtrl.hasMore.value) {
+      storeCtrl.loadMore();
+    }
   }
 
   @override
@@ -111,7 +145,12 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                 // SCROLLING: only the product cards move
                 Expanded(
                   child: Obx(() {
-                    final products = storeCtrl.filteredProducts;
+                    final products = storeCtrl.visibleProducts;
+                    final hasMore = storeCtrl.hasMore.value;
+
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => _fillIfShort(),
+                    );
 
                     // Read here so the whole grid rebuilds when the admin
                     // switches Black Friday on/off.
@@ -121,6 +160,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                         : 0.0;
 
                     return CustomScrollView(
+                      controller: _scroll,
+                      cacheExtent: 500,
                       physics: const BouncingScrollPhysics(),
                       slivers: [
                         if (blackFriday && maxOff > 0)
@@ -132,8 +173,15 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                             sliver: SliverGrid(
                               delegate: SliverChildBuilderDelegate(
-                                (_, index) => _productCard(products[index]),
+                                (_, index) {
+                                  final item = products[index];
+                                  return KeyedSubtree(
+                                    key: ValueKey(item.id),
+                                    child: _productCard(item),
+                                  );
+                                },
                                 childCount: products.length,
+                                addAutomaticKeepAlives: false,
                               ),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
@@ -142,6 +190,22 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                                     mainAxisSpacing: 12,
                                     childAspectRatio: .72,
                                   ),
+                            ),
+                          ),
+                        if (products.isNotEmpty && hasMore)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.2,
+                                    color: p.muted,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         SliverToBoxAdapter(child: _poweredBy()),
@@ -408,8 +472,11 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                 textInputAction: TextInputAction.search,
                 onChanged: (value) {
                   storeCtrl.searchText.value = value;
-                  storeCtrl.filterProducts();
-                  setState(() {}); // refresh clear button
+                  _searchDebounce?.cancel();
+                  _searchDebounce = Timer(
+                    const Duration(milliseconds: 250),
+                    () => storeCtrl.filterProducts(),
+                  );
                 },
                 style: TextStyle(fontSize: 14, color: p.text),
                 cursorColor: p.accent,
@@ -417,17 +484,20 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                   hintText: "Search by name, category or price",
                   hintStyle: TextStyle(color: p.hint, fontSize: 13.5),
                   prefixIcon: Icon(Icons.search, color: p.muted, size: 22),
-                  suffixIcon: _searchCtrl.text.isEmpty
-                      ? null
-                      : IconButton(
-                          icon: Icon(Icons.close, size: 18, color: p.muted),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            storeCtrl.searchText.value = '';
-                            storeCtrl.filterProducts();
-                            setState(() {});
-                          },
-                        ),
+                  suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _searchCtrl,
+                    builder: (_, value, __) => value.text.isEmpty
+                        ? const SizedBox.shrink()
+                        : IconButton(
+                            icon: Icon(Icons.close, size: 18, color: p.muted),
+                            onPressed: () {
+                              _searchDebounce?.cancel();
+                              _searchCtrl.clear();
+                              storeCtrl.searchText.value = '';
+                              storeCtrl.filterProducts();
+                            },
+                          ),
+                  ),
                   filled: true,
                   fillColor: p.tile,
                   contentPadding: EdgeInsets.zero,
@@ -653,7 +723,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   );
 
   static const _privacyPolicyUrl =
-      'https://docs.google.com/document/d/e/2PACX-1vRzYLA43UaBCW2Y-E96jcf7ue821JxfvyH8iH4HEumSQE9NkgSI8aBt23B2wgjZdymzZJxWDLzYzVPN/pub';
+      'https://docs.google.com/document/d/e/2PACX-1vRP7WWyLc3rxRJH8LoTYw7zCGqanOflXOI0qv_hVID1dYPSgzy9iiD0eKOyNC8PyeiEu9Mi9mmVJ4h5/pub';
 
   /// Opens the Privacy Policy in the browser.
   Future<void> _openPrivacyPolicy() async {
@@ -1008,16 +1078,10 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                                     color: p.faint,
                                   ),
                                 )
-                              : Image.memory(
-                                  base64Decode(product.images.first),
-                                  fit: BoxFit.contain,
-                                  gaplessPlayback: true,
-                                  errorBuilder: (_, __, ___) => Center(
-                                    child: Icon(
-                                      Icons.broken_image_outlined,
-                                      color: p.faint,
-                                    ),
-                                  ),
+                              : _ProductImage(
+                                  productId: product.id.toString(),
+                                  base64: product.images.first,
+                                  faint: p.faint,
                                 ),
                         ),
                         Positioned(
@@ -1168,4 +1232,100 @@ class _HP {
       isDark ? const Color(0x66000000) : const Color(0x0D000000);
   Color get shadowCard =>
       isDark ? const Color(0x66000000) : const Color(0x12000000);
+}
+
+//==================================================
+// LIGHTWEIGHT PRODUCT IMAGE
+//==================================================
+
+/// Small LRU cache of decoded base64 bytes. Without this, base64Decode ran on
+/// every rebuild AND handed Image.memory a brand-new byte list each time, so
+/// Flutter re-decoded the picture constantly (main cause of lag + memory).
+class _ImageBytesCache {
+  static const int _max = 40;
+  static final LinkedHashMap<String, Uint8List> _map =
+      LinkedHashMap<String, Uint8List>();
+
+  static Uint8List? get(String key, String b64) {
+    final hit = _map.remove(key);
+    if (hit != null) {
+      _map[key] = hit; // mark as most recently used
+      return hit;
+    }
+    try {
+      final bytes = base64Decode(b64);
+      _map[key] = bytes;
+      if (_map.length > _max) _map.remove(_map.keys.first);
+      return bytes;
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+class _ProductImage extends StatefulWidget {
+  const _ProductImage({
+    required this.productId,
+    required this.base64,
+    required this.faint,
+  });
+
+  final String productId;
+  final String base64;
+  final Color faint;
+
+  @override
+  State<_ProductImage> createState() => _ProductImageState();
+}
+
+class _ProductImageState extends State<_ProductImage> {
+  Uint8List? _bytes;
+
+  String get _key =>
+      '${widget.productId}:${widget.base64.length}:${widget.base64.hashCode}';
+
+  @override
+  void initState() {
+    super.initState();
+    _bytes = _ImageBytesCache.get(_key, widget.base64);
+  }
+
+  @override
+  void didUpdateWidget(covariant _ProductImage old) {
+    super.didUpdateWidget(old);
+    if (old.productId != widget.productId || old.base64 != widget.base64) {
+      _bytes = _ImageBytesCache.get(_key, widget.base64);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bytes = _bytes;
+    if (bytes == null) {
+      return Center(
+        child: Icon(Icons.broken_image_outlined, color: widget.faint),
+      );
+    }
+
+    return Image.memory(
+      bytes,
+      fit: BoxFit.contain,
+      // Decode at card size instead of full resolution → far less RAM.
+      cacheWidth: 400,
+      filterQuality: FilterQuality.low,
+      gaplessPlayback: true,
+      frameBuilder: (context, child, frame, wasSync) {
+        if (wasSync) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (_, __, ___) => Center(
+        child: Icon(Icons.broken_image_outlined, color: widget.faint),
+      ),
+    );
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,21 @@ class EcommerceStoreController extends GetxController {
   //==================================================
 
   final RxList<ProductModel> products = <ProductModel>[].obs;
+
+  /// Every product that matches the current search/category (ALL products are
+  /// searchable). Only a slice of it is ever shown on screen.
   final RxList<ProductModel> filteredProducts = <ProductModel>[].obs;
+
+  /// The slice of [filteredProducts] actually rendered (8 at a time).
+  final RxList<ProductModel> visibleProducts = <ProductModel>[].obs;
+
+  static const int pageSize = 8;
+  final RxBool hasMore = false.obs;
+
+  /// Bumps whenever the list is reset (new search / category) so the page
+  /// can jump back to the top.
+  final RxInt pageResetTick = 0.obs;
+  bool _loadingMore = false;
 
   //==================================================
   // CATEGORIES
@@ -97,7 +112,8 @@ class EcommerceStoreController extends GetxController {
             );
 
             _loadCategoriesFromProducts();
-            filterProducts();
+            // keep the user's scroll depth when data changes in realtime
+            filterProducts(resetPage: false);
           },
           onError: (Object error) => debugPrint('Product stream error: $error'),
         );
@@ -123,7 +139,7 @@ class EcommerceStoreController extends GetxController {
   // FILTER
   //==================================================
 
-  void filterProducts() {
+  void filterProducts({bool resetPage = true}) {
     Iterable<ProductModel> result = products;
 
     if (selectedCategory.value != 'All') {
@@ -142,6 +158,35 @@ class EcommerceStoreController extends GetxController {
     }
 
     filteredProducts.assignAll(result);
+
+    final count = resetPage
+        ? pageSize
+        : math.max(pageSize, visibleProducts.length);
+    final shown = math.min(count, filteredProducts.length);
+
+    visibleProducts.assignAll(filteredProducts.take(shown));
+    hasMore.value = shown < filteredProducts.length;
+
+    if (resetPage) pageResetTick.value++;
+  }
+
+  /// Appends the next [pageSize] products (Temu-style infinite scroll).
+  Future<void> loadMore() async {
+    if (_loadingMore || !hasMore.value) return;
+    _loadingMore = true;
+
+    // tiny delay so the spinner is seen and the append doesn't land mid-fling
+    await Future<void>.delayed(const Duration(milliseconds: 220));
+
+    final start = visibleProducts.length;
+    final end = math.min(start + pageSize, filteredProducts.length);
+
+    if (start < end) {
+      visibleProducts.addAll(filteredProducts.sublist(start, end));
+    }
+    hasMore.value = end < filteredProducts.length;
+
+    _loadingMore = false;
   }
 
   void updateSearch(String value) {
@@ -170,6 +215,8 @@ class EcommerceStoreController extends GetxController {
 
     products.clear();
     filteredProducts.clear();
+    visibleProducts.clear();
+    hasMore.value = false;
     categories.assignAll(['All']);
     selectedCategory.value = 'All';
     searchText.value = '';
