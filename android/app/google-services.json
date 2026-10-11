@@ -7,9 +7,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:248321400997:android:3b17f427d56170c66bad4c",
+        "mobilesdk_app_id": "1:248321400997:android:ae155e5f8b2d20236bad4c",
         "android_client_info": {
-          "package_name": "com.homeo.app"
+          "package_name": "com.homeo.service"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF_GwtlL12E0gw9kQdvVoKQF98PqQ35ms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248321400997:android:8ecc19b7eaca42ea6bad4c",
+        "android_client_info": {
+          "package_name": "com.hyend.app"
         }
       },
       "oauth_client": [],
@@ -29,6 +48,25 @@
         "mobilesdk_app_id": "1:248321400997:android:0e2154772bffe6af6bad4c",
         "android_client_info": {
           "package_name": "com.realstore.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF_GwtlL12E0gw9kQdvVoKQF98PqQ35ms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248321400997:android:26516df218d7e5566bad4c",
+        "android_client_info": {
+          "package_name": "com.realstore.store"
         }
       },
       "oauth_client": [],

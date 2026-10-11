@@ -1,4 +1,4 @@
-package com.realstore.app
+package com.realstore.store
 
 import io.flutter.embedding.android.FlutterActivity
 
