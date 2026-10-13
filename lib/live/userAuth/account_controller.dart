@@ -22,8 +22,8 @@ class AccountController extends GetxController {
   var cowriexBalance = 0.0.obs;
   var userBalance = 0.0.obs;
   var isBalanceVisible = true.obs;
-  var userName = 'Null'.obs;
-  var userEmail = 'Null'.obs;
+  var userName = ''.obs;
+  var userEmail = ''.obs;
   RxDouble loadingProgress = 0.0.obs;
   RxInt dailyTapCount = 0.obs;
   DateTime? lastTapDate;
@@ -38,6 +38,12 @@ class AccountController extends GetxController {
 
   Timer? _balanceTimer;
 
+  // Auth + realtime user-doc subscriptions. They are (re)bound every time the
+  // signed-in user changes, so this controller no longer depends on a user
+  // already being logged in at the moment it is created.
+  StreamSubscription<User?>? _authSub;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _userDocSub;
+
   // void startRealtimeBalance() {
   //   _balanceTimer?.cancel();
   //   _balanceTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
@@ -48,35 +54,77 @@ class AccountController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // authStateChanges() emits the current user immediately on listen, and
+    // again on every login / logout / account switch. This fixes the
+    // "name & email are Null until I restart the app" bug: if this controller
+    // is created before login, it now still picks the user up once they sign in.
+    _authSub = FirebaseAuth.instance.authStateChanges().listen(_bindUser);
+  }
+
+  @override
+  void onClose() {
+    _balanceTimer?.cancel();
+    _authSub?.cancel();
+    _userDocSub?.cancel();
+    super.onClose();
+  }
+
+  /// Called whenever the signed-in user changes (including app start).
+  void _bindUser(User? user) {
+    // Drop the previous user's realtime listener first.
+    _userDocSub?.cancel();
+    _userDocSub = null;
+
+    if (user == null) {
+      _resetState();
+      return;
+    }
+
+    // Show something right away from Firebase Auth, so the UI is never "Null"
+    // while Firestore is loading (or if the e-users doc doesn't exist yet,
+    // e.g. it is created a moment after sign-in in AuthController.login()).
+    userName.value = user.displayName ?? '';
+    userEmail.value = user.email ?? '';
+
     fetchWalletDetails();
-    fetchWalletAddress(); // Fetch wallet address on initialization
-    fetchWalletData(); // Fetch both address & publicKey on init
-    fetchUserInfo(); // <- Add this
+    fetchWalletAddress();
+    fetchWalletData();
+    fetchUserInfo();
 
     // Real-time updates for user data
-    final user = authController.currentUser;
-    if (user != null) {
-      _firestore.collection('e-users').doc(user.uid).snapshots().listen((
-        snapshot,
-      ) {
-        final data = snapshot.data();
-        if (data != null) {
+    _userDocSub = _firestore
+        .collection('e-users')
+        .doc(user.uid)
+        .snapshots()
+        .listen((snapshot) {
+          final data = snapshot.data();
+          if (data == null) return;
+
           userBalance.value = (data['acc_bal'] as num? ?? 0).toDouble();
           isBalanceVisible.value = data['is_balance_visible'] ?? true;
 
           // update name & email dynamically
           userName.value = data['name'] ?? user.displayName ?? "Unknown";
           userEmail.value = data['email'] ?? user.email ?? "Unknown";
-        }
-      });
-    }
-    // startRealtimeBalance(); // Start blockchain polling
+          avatarName.value = data['avatar'] ?? '';
+        }, onError: (_) {});
   }
 
-  @override
-  void onClose() {
-    _balanceTimer?.cancel();
-    super.onClose();
+  /// Clears everything tied to the previous user so the next person who logs
+  /// in on this device never sees stale data.
+  void _resetState() {
+    userName.value = '';
+    userEmail.value = '';
+    avatarName.value = '';
+    userBalance.value = 0.0;
+    isBalanceVisible.value = true;
+    walletAddress.value = '';
+    fullWalletAddress.value = '';
+    publicKey.value = '';
+    fullPublicKey.value = '';
+    walletName.value = "Wallet";
+    addressName.value = "Address";
   }
 
   Future<void> setAvatar(String avatarName) async {
@@ -102,9 +150,18 @@ class AccountController extends GetxController {
         userEmail.value = data['email'] ?? user.email ?? "Unknown";
         // ✅ AVATAR
         avatarName.value = data['avatar'] ?? '';
+      } else {
+        // Doc not created yet (it can appear a moment after sign-in).
+        // Fall back to Firebase Auth; the realtime listener will fill in
+        // the rest as soon as the doc exists.
+        if (userName.value.isEmpty) userName.value = user.displayName ?? '';
+        if (userEmail.value.isEmpty) userEmail.value = user.email ?? '';
       }
     } catch (e) {
-      Get.snackbar("Error", "Failed to fetch user info");
+      // Ignore if the user signed out while the request was in flight.
+      if (authController.currentUser != null) {
+        Get.snackbar("Error", "Failed to fetch user info");
+      }
     }
   }
 

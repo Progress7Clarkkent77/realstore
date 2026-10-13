@@ -78,7 +78,7 @@ class EcommerceAdminDashboardPage extends StatelessWidget {
             ),
             IconButton(
               tooltip: 'View store',
-              onPressed: () => Get.offAllNamed(EcommerceLiveRoutes.home),
+              onPressed: () => Get.offAllNamed('/home'),
               icon: const Icon(Icons.storefront_outlined),
             ),
             const SizedBox(width: 8),

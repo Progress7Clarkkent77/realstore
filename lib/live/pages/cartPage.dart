@@ -154,7 +154,7 @@ class CartPage extends StatelessWidget {
             ),
             const SizedBox(height: 26),
             ElevatedButton(
-              onPressed: () => Get.offAllNamed(EcommerceLiveRoutes.home),
+              onPressed: () => Get.offAllNamed('/home'),
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 minimumSize: const Size(190, 52),
