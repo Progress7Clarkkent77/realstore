@@ -153,20 +153,20 @@ class CartPage extends StatelessWidget {
               style: TextStyle(color: p.muted, fontSize: 14),
             ),
             const SizedBox(height: 26),
-            ElevatedButton(
-              onPressed: () => Get.offAllNamed('/home'),
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                minimumSize: const Size(190, 52),
-                backgroundColor: p.accent,
-                foregroundColor: p.onAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                textStyle: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-              child: const Text('Start shopping'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () => Get.offAllNamed('/home'),
+            //   style: ElevatedButton.styleFrom(
+            //     elevation: 0,
+            //     minimumSize: const Size(190, 52),
+            //     backgroundColor: p.accent,
+            //     foregroundColor: p.onAccent,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(16),
+            //     ),
+            //     textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            //   ),
+            //   child: const Text('Start shopping'),
+            // ),
           ],
         ),
       ),
@@ -516,7 +516,7 @@ class CartPage extends StatelessWidget {
               Icon(Icons.lock_outline_rounded, size: 14, color: p.muted),
               const SizedBox(width: 6),
               Text(
-                'Secure checkout with Paystack',
+                'Secure checkout with RealStore',
                 style: TextStyle(color: p.muted, fontSize: 12),
               ),
             ],

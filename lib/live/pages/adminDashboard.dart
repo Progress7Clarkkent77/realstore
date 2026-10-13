@@ -76,11 +76,11 @@ class EcommerceAdminDashboardPage extends StatelessWidget {
               onPressed: dashboardCtrl.startRealtimeListeners,
               icon: const Icon(Icons.refresh_rounded),
             ),
-            IconButton(
-              tooltip: 'View store',
-              onPressed: () => Get.offAllNamed('/home'),
-              icon: const Icon(Icons.storefront_outlined),
-            ),
+            // IconButton(
+            //   tooltip: 'View store',
+            //   onPressed: () => Get.offAllNamed('/home'),
+            //   icon: const Icon(Icons.storefront_outlined),
+            // ),
             const SizedBox(width: 8),
           ],
           bottom: loading
