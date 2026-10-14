@@ -180,20 +180,20 @@ class OrdersPage extends StatelessWidget {
               style: TextStyle(color: p.muted, fontSize: 14),
             ),
             const SizedBox(height: 26),
-            // ElevatedButton(
-            //   onPressed: () => Get.offAllNamed('/home'),
-            //   style: ElevatedButton.styleFrom(
-            //     elevation: 0,
-            //     minimumSize: const Size(190, 52),
-            //     backgroundColor: p.accent,
-            //     foregroundColor: p.onAccent,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(16),
-            //     ),
-            //     textStyle: const TextStyle(fontWeight: FontWeight.w700),
-            //   ),
-            //   child: const Text('Start shopping'),
-            // ),
+            ElevatedButton(
+              onPressed: () => Get.offAllNamed(EcommerceLiveRoutes.home),
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                minimumSize: const Size(190, 52),
+                backgroundColor: p.accent,
+                foregroundColor: p.onAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                textStyle: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              child: const Text('Start shopping'),
+            ),
           ],
         ),
       ),

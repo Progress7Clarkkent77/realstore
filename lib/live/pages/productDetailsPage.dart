@@ -31,6 +31,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ? Get.find<ThemeController>()
       : Get.put(ThemeController());
 
+  /// The product this page shows. Owned by the page itself (seeded from the
+  /// route argument), so it can never be lost to a controller being recreated.
+  final Rxn<ProductModel> _selected = Rxn<ProductModel>();
+
   final RxInt quantity = 1.obs;
   final RxInt imageIndex = 0.obs;
   final RxBool busy = false.obs;
@@ -52,6 +56,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   static const Color _green = Color(0xFF16A34A);
   static const Color _amber = Color(0xFFD97706);
   static const Color _red = Color(0xFFE5484D);
+
+  @override
+  void initState() {
+    super.initState();
+
+    final arg = Get.arguments;
+    if (arg is ProductModel) {
+      _selected.value = arg;
+      storeCtrl.selectProduct(arg);
+    } else {
+      _selected.value = storeCtrl.selectedProduct.value;
+    }
+  }
 
   @override
   void dispose() {
@@ -109,6 +126,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
     if (_pager.hasClients) _pager.jumpToPage(0);
 
+    _selected.value = product;
     storeCtrl.selectProduct(product);
 
     if (_scroll.hasClients) {
@@ -223,7 +241,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     return Obx(() {
       final p = _P(themeCtrl.isDarkMode.value);
-      final product = storeCtrl.selectedProduct.value;
+      final product = _selected.value;
 
       if (product == null) {
         return Scaffold(

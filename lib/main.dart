@@ -71,6 +71,10 @@ class AppBinding extends Bindings {
     Get.put(ThemeController(), permanent: true);
     Get.put(StartupController(), permanent: true);
 
+    // Navigation helper. Permanent so every page (even a web refresh straight
+    // onto /cart or /orders) can Get.find() it.
+    Get.put(EcommerceLiveNavController(), permanent: true);
+
     Get.lazyPut(() => AccountController(), fenix: true);
     //Get.lazyPut(() => StartupController(), fenix: true);
     Get.lazyPut(() => RewardController(), fenix: true);
@@ -81,7 +85,14 @@ class AppBinding extends Bindings {
     Get.lazyPut(() => VerifiedController(), fenix: true);
 
     // Storefront
-    Get.lazyPut(() => EcommerceStoreController(), fenix: true);
+    // The store controller holds the product list AND the selected product.
+    // As a lazy `fenix` controller GetX tied it to the route that first created
+    // it, deleted it when that route closed, and built a brand-new EMPTY one on
+    // the next Get.find() - so home and the details page ended up with
+    // different instances ("Product not found"). Permanent = one instance for
+    // the whole session. Products are public and need no signed-in user, so
+    // creating it at startup is safe.
+    Get.put(EcommerceStoreController(), permanent: true);
     Get.lazyPut(() => EcommerceCartController(), fenix: true);
     Get.lazyPut(() => OrderController(), fenix: true);
 

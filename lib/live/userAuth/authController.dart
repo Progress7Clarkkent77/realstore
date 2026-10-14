@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' show ImageFilter;
 
 import 'package:realstore/live/liveControllers/reward_controller.dart';
 import 'package:realstore/live/liveControllers/storeConfig.dart';
@@ -81,6 +82,9 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
+  /// How long the premium "signing you in" dialog stays on screen.
+  static const Duration _loginDialogDuration = Duration(seconds: 5);
+
   Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       Get.snackbar("Login Error", "Please fill in all fields");
@@ -89,8 +93,14 @@ class AuthController extends GetxController {
 
     isLoading.value = true;
 
-    // Show loading dialog
-    Get.dialog(LoadingDialog(), barrierDismissible: false);
+    // Premium loading dialog. It stays up for the full [_loginDialogDuration]
+    // on a successful login (see below), then we go straight to the home page.
+    final stopwatch = Stopwatch()..start();
+    Get.dialog(
+      const _PremiumLoginDialog(duration: _loginDialogDuration),
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.45),
+    );
 
     try {
       // Step 1: verify the credentials against Firebase Auth. This is the
@@ -182,22 +192,30 @@ class AuthController extends GetxController {
         // Never let a push-notification issue block a successful login.
       }
 
-      // Close loading dialog
-      if (Get.isDialogOpen == true) Get.back();
-
       //Get.put(ModerationController(), permanent: true);
 
+      // Finish setup while the dialog is still showing.
       final themeCtrl = Get.put(ThemeController());
       await themeCtrl.loadTheme();
 
-      // Route by role: the store admin lands on the dashboard,
-      // everyone else goes to the storefront.
       isAdmin.value = StoreConfig.isAdminEmail(userCredential.user?.email);
 
+      // Keep the dialog up until the full duration has passed (only the
+      // time that is left, so a slow network doesn't add extra waiting).
+      final remaining = _loginDialogDuration - stopwatch.elapsed;
+      if (remaining > Duration.zero) {
+        await Future.delayed(remaining);
+      }
+
+      // Close loading dialog
+      if (Get.isDialogOpen == true) Get.back();
+
+      // Route by role: the store admin lands on the dashboard, everyone
+      // else goes STRAIGHT to the home page (no pre-login screen in between).
       if (isAdmin.value) {
         Get.offAll(() => EcommerceAdminDashboardPage());
       } else {
-        Get.offNamed('/onboarding');
+        Get.offAllNamed('/home');
       }
     } catch (e) {
       if (Get.isDialogOpen == true) Get.back();
@@ -700,5 +718,207 @@ class AuthController extends GetxController {
     } catch (e) {
       print("❌ Error rewarding referrer: $e");
     }
+  }
+}
+
+// =====================================================================
+// PREMIUM LOGIN DIALOG
+// ---------------------------------------------------------------------
+// Blurred backdrop, pulsing icon, rotating status text and a progress bar
+// that fills over [duration]. Not dismissible (the back button is blocked).
+// =====================================================================
+class _PremiumLoginDialog extends StatefulWidget {
+  const _PremiumLoginDialog({required this.duration});
+
+  final Duration duration;
+
+  @override
+  State<_PremiumLoginDialog> createState() => _PremiumLoginDialogState();
+}
+
+class _PremiumLoginDialogState extends State<_PremiumLoginDialog>
+    with TickerProviderStateMixin {
+  late final AnimationController _progress;
+  late final AnimationController _pulse;
+
+  static const List<String> _messages = [
+    'Verifying your account…',
+    'Securing your session…',
+    'Preparing your store…',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _progress = AnimationController(vsync: this, duration: widget.duration)
+      ..forward();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _progress.dispose();
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = Get.isRegistered<ThemeController>()
+        ? Get.find<ThemeController>().isDarkMode.value
+        : false;
+
+    final Color surface = isDark ? const Color(0xFF1A1A1D) : Colors.white;
+    final Color border = isDark
+        ? const Color(0xFF2A2A2E)
+        : const Color(0xFFE9E9EC);
+    final Color track = isDark
+        ? const Color(0xFF2E2E33)
+        : const Color(0xFFEDEDF0);
+    final Color text = isDark ? Colors.white : const Color(0xFF0B0B0C);
+    final Color muted = isDark
+        ? const Color(0xFF9A9AA2)
+        : const Color(0xFF6B6B73);
+    final Color accent = isDark ? Colors.white : const Color(0xFF0B0B0C);
+    final Color onAccent = isDark ? const Color(0xFF0B0B0C) : Colors.white;
+
+    return PopScope(
+      canPop: false,
+      child: Material(
+        type: MaterialType.transparency,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: SizedBox.expand(
+            child: Center(
+              child: Container(
+                width: 300,
+                padding: const EdgeInsets.fromLTRB(26, 30, 26, 26),
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 40,
+                      offset: Offset(0, 18),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 88,
+                      height: 88,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox.expand(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: accent,
+                              backgroundColor: track,
+                            ),
+                          ),
+                          ScaleTransition(
+                            scale: Tween<double>(begin: 0.9, end: 1.0).animate(
+                              CurvedAnimation(
+                                parent: _pulse,
+                                curve: Curves.easeInOut,
+                              ),
+                            ),
+                            child: Container(
+                              width: 58,
+                              height: 58,
+                              decoration: BoxDecoration(
+                                color: accent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.lock_open_rounded,
+                                color: onAccent,
+                                size: 26,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Welcome back',
+                      style: TextStyle(
+                        color: text,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    AnimatedBuilder(
+                      animation: _progress,
+                      builder: (context, _) {
+                        final int i = (_progress.value * _messages.length)
+                            .floor()
+                            .clamp(0, _messages.length - 1);
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: Text(
+                            _messages[i],
+                            key: ValueKey<int>(i),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: muted,
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    AnimatedBuilder(
+                      animation: _progress,
+                      builder: (context, _) {
+                        return Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(99),
+                              child: LinearProgressIndicator(
+                                value: _progress.value,
+                                minHeight: 5,
+                                color: accent,
+                                backgroundColor: track,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              '${(_progress.value * 100).round()}%',
+                              style: TextStyle(
+                                color: muted,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

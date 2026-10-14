@@ -34,5 +34,6 @@ class EcommerceLiveRoutes {
 }
 
 class EcommerceLiveNavController extends GetxController {
-  void goTo(String route) => Get.toNamed(route);
+  void goTo(String route, {dynamic arguments}) =>
+      Get.toNamed(route, arguments: arguments);
 }

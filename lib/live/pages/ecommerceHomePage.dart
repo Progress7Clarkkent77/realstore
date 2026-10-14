@@ -40,11 +40,14 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   /// rebuild when the theme is switched from the profile page).
   _HP get p => _HP(themeCtrl.isDarkMode.value);
 
-  late final EcommerceLiveNavController nav;
-  late final AuthController authCtrl;
-  late final EcommerceStoreController storeCtrl;
-  late final EcommerceCartController cartCtrl;
-  late final StatusController statusCtrl;
+  // Resolved on every use instead of cached in initState. A cached reference
+  // goes stale if GetX ever deletes and recreates a controller, which left this
+  // page talking to a different instance than the pages it opens.
+  EcommerceLiveNavController get nav => Get.find<EcommerceLiveNavController>();
+  AuthController get authCtrl => Get.find<AuthController>();
+  EcommerceStoreController get storeCtrl => Get.find<EcommerceStoreController>();
+  EcommerceCartController get cartCtrl => Get.find<EcommerceCartController>();
+  StatusController get statusCtrl => Get.find<StatusController>();
 
   // Support contact used by the Support sheet — change to your real details.
   static const _supportEmail = 'contact@afiasplendid.co.site';
@@ -66,11 +69,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   void initState() {
     super.initState();
     themeCtrl = Get.find<ThemeController>();
-    nav = Get.put(EcommerceLiveNavController());
-    authCtrl = Get.find<AuthController>();
-    storeCtrl = Get.find<EcommerceStoreController>();
-    cartCtrl = Get.find<EcommerceCartController>();
-    statusCtrl = Get.find<StatusController>();
+    // Registered in AppBinding already; this is only a safety net.
+    Get.put(EcommerceLiveNavController(), permanent: true);
     statusCtrl.startProductLikesListener();
 
     // Listens to the Black Friday switch for this customer (permanent).
@@ -1054,7 +1054,9 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
             }
 
             storeCtrl.selectProduct(product);
-            nav.goTo(EcommerceLiveRoutes.productDetails);
+            // The product also travels WITH the route, so the details page
+            // never depends on which controller instance holds the selection.
+            nav.goTo(EcommerceLiveRoutes.productDetails, arguments: product);
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

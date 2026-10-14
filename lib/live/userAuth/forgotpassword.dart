@@ -502,7 +502,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     width: logoSize,
                     height: logoSize,
                     child: Image.asset(
-                      'assets/images/Textido Logo.jpeg',
+                      'assets/images/RealStore Logo.png',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -642,7 +642,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
                 /// FOOTER
                 Text(
-                  'A text-first social platform',
+                  'Shop Real. Shop Direct.',
                   style: TextStyle(
                     fontSize: 11,
                     fontStyle: FontStyle.italic,
