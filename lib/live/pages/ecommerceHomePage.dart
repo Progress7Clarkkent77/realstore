@@ -45,7 +45,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   // page talking to a different instance than the pages it opens.
   EcommerceLiveNavController get nav => Get.find<EcommerceLiveNavController>();
   AuthController get authCtrl => Get.find<AuthController>();
-  EcommerceStoreController get storeCtrl => Get.find<EcommerceStoreController>();
+  EcommerceStoreController get storeCtrl =>
+      Get.find<EcommerceStoreController>();
   EcommerceCartController get cartCtrl => Get.find<EcommerceCartController>();
   StatusController get statusCtrl => Get.find<StatusController>();
 
@@ -723,7 +724,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   );
 
   static const _privacyPolicyUrl =
-      'https://docs.google.com/document/d/e/2PACX-1vRP7WWyLc3rxRJH8LoTYw7zCGqanOflXOI0qv_hVID1dYPSgzy9iiD0eKOyNC8PyeiEu9Mi9mmVJ4h5/pub';
+      'https://docs.google.com/document/d/e/2PACX-1vTbMvgvwBPlNvqq2GN9llML1TOFkifEfmR6qtAE0bRy5ZaGN2_lcA8xo0GU0TEZNiVT6OtlluWcMaS8/pub';
 
   /// Opens the Privacy Policy in the browser.
   Future<void> _openPrivacyPolicy() async {
@@ -1325,9 +1326,8 @@ class _ProductImageState extends State<_ProductImage> {
           child: child,
         );
       },
-      errorBuilder: (_, __, ___) => Center(
-        child: Icon(Icons.broken_image_outlined, color: widget.faint),
-      ),
+      errorBuilder: (_, __, ___) =>
+          Center(child: Icon(Icons.broken_image_outlined, color: widget.faint)),
     );
   }
 }

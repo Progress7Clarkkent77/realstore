@@ -326,8 +326,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   const SizedBox(height: 28),
                   _label('Invite & earn', p),
                   const SizedBox(height: 12),
-                  _referralCard(p),
-                  const SizedBox(height: 28),
+                  // _referralCard(p),
+                  // const SizedBox(height: 28),
                   _label('Policies', p),
                   const SizedBox(height: 12),
                   _group(p, [
@@ -862,117 +862,117 @@ class _ProfileScreenState extends State<ProfileScreen>
   // REFERRAL
   //==================================================
 
-  Widget _referralCard(_P p) {
-    final loading = referLoading.value;
-    final code = referCode.value;
+  // Widget _referralCard(_P p) {
+  //   final loading = referLoading.value;
+  //   final code = referCode.value;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: p.border),
-        boxShadow: p.shadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: p.accent,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(Icons.card_giftcard_rounded, color: p.onAccent),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Invite friends',
-                      style: TextStyle(
-                        color: p.text,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Earn rewards when a new user joins with your code.',
-                      style: TextStyle(
-                        color: p.muted,
-                        fontSize: 12.5,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: p.tile,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    loading ? '••••••' : (code.isEmpty ? '—' : code),
-                    style: TextStyle(
-                      color: p.text,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 3,
-                    ),
-                  ),
-                ),
-                Text(
-                  'YOUR CODE',
-                  style: TextStyle(
-                    color: p.muted,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: loading ? null : referCtrl.copyReferralText,
-              icon: const Icon(Icons.copy_rounded, size: 18),
-              label: const Text('Copy referral code'),
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor: p.accent,
-                foregroundColor: p.onAccent,
-                disabledBackgroundColor: p.tile,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                textStyle: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: p.surface,
+  //       borderRadius: BorderRadius.circular(22),
+  //       border: Border.all(color: p.border),
+  //       boxShadow: p.shadow,
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             Container(
+  //               width: 46,
+  //               height: 46,
+  //               decoration: BoxDecoration(
+  //                 color: p.accent,
+  //                 borderRadius: BorderRadius.circular(14),
+  //               ),
+  //               child: Icon(Icons.card_giftcard_rounded, color: p.onAccent),
+  //             ),
+  //             const SizedBox(width: 14),
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     'Invite friends',
+  //                     style: TextStyle(
+  //                       color: p.text,
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w800,
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 2),
+  //                   Text(
+  //                     'Earn rewards when a new user joins with your code.',
+  //                     style: TextStyle(
+  //                       color: p.muted,
+  //                       fontSize: 12.5,
+  //                       height: 1.4,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 18),
+  //         Container(
+  //           width: double.infinity,
+  //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+  //           decoration: BoxDecoration(
+  //             color: p.tile,
+  //             borderRadius: BorderRadius.circular(16),
+  //           ),
+  //           child: Row(
+  //             children: [
+  //               Expanded(
+  //                 child: Text(
+  //                   loading ? '••••••' : (code.isEmpty ? '—' : code),
+  //                   style: TextStyle(
+  //                     color: p.text,
+  //                     fontSize: 18,
+  //                     fontWeight: FontWeight.w800,
+  //                     letterSpacing: 3,
+  //                   ),
+  //                 ),
+  //               ),
+  //               Text(
+  //                 'YOUR CODE',
+  //                 style: TextStyle(
+  //                   color: p.muted,
+  //                   fontSize: 10.5,
+  //                   fontWeight: FontWeight.w700,
+  //                   letterSpacing: 1,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         const SizedBox(height: 14),
+  //         SizedBox(
+  //           width: double.infinity,
+  //           child: ElevatedButton.icon(
+  //             onPressed: loading ? null : referCtrl.copyReferralText,
+  //             icon: const Icon(Icons.copy_rounded, size: 18),
+  //             label: const Text('Copy referral code'),
+  //             style: ElevatedButton.styleFrom(
+  //               elevation: 0,
+  //               minimumSize: const Size.fromHeight(50),
+  //               backgroundColor: p.accent,
+  //               foregroundColor: p.onAccent,
+  //               disabledBackgroundColor: p.tile,
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(16),
+  //               ),
+  //               textStyle: const TextStyle(fontWeight: FontWeight.w700),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 //==================================================
