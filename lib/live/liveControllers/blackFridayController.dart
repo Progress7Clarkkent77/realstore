@@ -17,7 +17,8 @@ class BlackFridayController extends GetxController {
   static const double maxPercent = 90;
 
   /// Get the controller, creating it (once, permanently) if needed.
-  static BlackFridayController ensure() => Get.isRegistered<BlackFridayController>()
+  static BlackFridayController ensure() =>
+      Get.isRegistered<BlackFridayController>()
       ? Get.find<BlackFridayController>()
       : Get.put(BlackFridayController(), permanent: true);
 
@@ -117,7 +118,10 @@ class BlackFridayController extends GetxController {
 
     if (percent != null) {
       if (percent < 0 || percent > maxPercent) {
-        Get.snackbar('Discount', 'Discount must be between 0 and ${maxPercent.toInt()}%');
+        Get.snackbar(
+          'Discount',
+          'Discount must be between 0 and ${maxPercent.toInt()}%',
+        );
         return false;
       }
 
@@ -151,7 +155,10 @@ class BlackFridayController extends GetxController {
   /// (0 removes all discounts). Returns how many products were updated.
   Future<int> applyPercentToAll(double percent) async {
     if (percent < 0 || percent > maxPercent) {
-      Get.snackbar('Discount', 'Discount must be between 0 and ${maxPercent.toInt()}%');
+      Get.snackbar(
+        'Discount',
+        'Discount must be between 0 and ${maxPercent.toInt()}%',
+      );
       return 0;
     }
 

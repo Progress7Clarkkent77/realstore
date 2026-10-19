@@ -24,7 +24,7 @@ import 'package:realstore/live/liveControllers/ecommerceStoreController.dart';
 import 'package:realstore/live/liveControllers/manageOrdersController.dart';
 import 'package:realstore/live/liveControllers/manageProductController.dart';
 import 'package:realstore/live/liveControllers/orderController.dart';
-import 'package:realstore/live/liveControllers/reward_controller.dart';
+import 'package:realstore/live/liveControllers/r_controller.dart';
 import 'package:realstore/live/liveControllers/startup_controller.dart';
 import 'package:realstore/live/liveControllers/uploadProductController.dart';
 import 'package:realstore/live/pages/adminDashboard.dart';
@@ -77,7 +77,7 @@ class AppBinding extends Bindings {
 
     Get.lazyPut(() => AccountController(), fenix: true);
     //Get.lazyPut(() => StartupController(), fenix: true);
-    Get.lazyPut(() => RewardController(), fenix: true);
+    Get.lazyPut(() => RController(), fenix: true);
     //Get.lazyPut(() => ThemeController(), fenix: true);
     Get.lazyPut(() => AvailableBalanceController(), fenix: true);
     Get.lazyPut(() => ReferController(), fenix: true);
