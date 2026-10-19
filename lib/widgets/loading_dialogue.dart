@@ -108,14 +108,6 @@ class _PaymentSuccess2State extends State<PaymentSuccess2> {
       });
     });
     //  accountController.fetchBalances(); // Fetch data on widget load
-    accountController.fetchWalletAddress(); // Fetch wallet address on init
-    accountController.toggleBalanceVisibility();
-
-    accountController.fetchWalletDetails();
-    accountController
-        .fetchWalletAddress(); // Fetch wallet address on initialization
-    accountController
-        .fetchWalletData(); // Fetch both address & publicKey on init
   }
 
   @override
@@ -223,14 +215,6 @@ class _PaymentFailure2State extends State<PaymentFailure2> {
     });
     super.initState();
     //  accountController.fetchBalances(); // Fetch data on widget load
-    accountController.fetchWalletAddress(); // Fetch wallet address on init
-    accountController.toggleBalanceVisibility();
-
-    accountController.fetchWalletDetails();
-    accountController
-        .fetchWalletAddress(); // Fetch wallet address on initialization
-    accountController
-        .fetchWalletData(); // Fetch both address & publicKey on init
   }
 
   @override

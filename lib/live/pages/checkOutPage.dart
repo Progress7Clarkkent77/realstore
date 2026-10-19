@@ -478,31 +478,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ],
             ),
             const SizedBox(height: 20),
-            // Text(
-            //   'Where are we delivering to?',
-            //   style: TextStyle(
-            //     color: p.text,
-            //     fontSize: 14,
-            //     fontWeight: FontWeight.w800,
-            //   ),
-            // ),
-            // const SizedBox(height: 12),
-            // DeliveryZoneSelector(
-            //   zone: cartCtrl.deliveryZone.value,
-            //   onChanged: cartCtrl.setDeliveryZone,
-            //   tile: p.tile,
-            //   border: p.border,
-            //   accent: p.accent,
-            //   onAccent: p.onAccent,
-            //   text: p.text,
-            //   muted: p.muted,
-            //   enuguSubtitle: _feeText(
-            //     cartCtrl.deliveryFeeForZone(DeliveryZone.enugu),
-            //   ),
-            //   outsideSubtitle: _feeText(
-            //     cartCtrl.deliveryFeeForZone(DeliveryZone.outside),
-            //   ),
-            // ),
+
             if (loadingSaved.value) ...[
               const SizedBox(height: 14),
               ClipRRect(
@@ -971,45 +947,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
   }
-
-  // Widget _payButton(StorePalette p) {
-  //   final placing = orderCtrl.isPlacingOrder.value;
-
-  //   return SizedBox(
-  //     width: double.infinity,
-  //     child: ElevatedButton(
-  //       onPressed: placing ? null : _submit,
-  //       style: ElevatedButton.styleFrom(
-  //         elevation: 0,
-  //         minimumSize: const Size.fromHeight(56),
-  //         backgroundColor: p.accent,
-  //         foregroundColor: p.onAccent,
-  //         disabledBackgroundColor: p.tile,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(18),
-  //         ),
-  //         textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-  //       ),
-  //       child: placing
-  //           ? SizedBox(
-  //               width: 22,
-  //               height: 22,
-  //               child: CircularProgressIndicator(
-  //                 strokeWidth: 2.5,
-  //                 color: p.text,
-  //               ),
-  //             )
-  //           : Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 const Icon(Icons.lock_outline_rounded, size: 18),
-  //                 const SizedBox(width: 10),
-  //                 Text('Pay ${formatNaira(cartCtrl.grandTotal)}'),
-  //               ],
-  //             ),
-  //     ),
-  //   );
-  // }
 
   Widget _bottomBar(StorePalette p) {
     return Container(

@@ -20,38 +20,14 @@ class CategoriesPage extends StatelessWidget {
     }
 
     final categories = [
-      {
-        "name": "Electronics",
-        "count": "320 Products",
-      },
-      {
-        "name": "Fashion",
-        "count": "210 Products",
-      },
-      {
-        "name": "Phones",
-        "count": "180 Products",
-      },
-      {
-        "name": "Beauty",
-        "count": "95 Products",
-      },
-      {
-        "name": "Sports",
-        "count": "140 Products",
-      },
-      {
-        "name": "Home & Living",
-        "count": "250 Products",
-      },
-      {
-        "name": "Computers",
-        "count": "130 Products",
-      },
-      {
-        "name": "Accessories",
-        "count": "400 Products",
-      },
+      {"name": "Electronics", "count": "320 Products"},
+      {"name": "Fashion", "count": "210 Products"},
+      {"name": "Phones", "count": "180 Products"},
+      {"name": "Beauty", "count": "95 Products"},
+      {"name": "Sports", "count": "140 Products"},
+      {"name": "Home & Living", "count": "250 Products"},
+      {"name": "Computers", "count": "130 Products"},
+      {"name": "Accessories", "count": "400 Products"},
     ];
 
     return Scaffold(
@@ -60,9 +36,7 @@ class CategoriesPage extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Text(
           "Categories",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
@@ -81,10 +55,7 @@ class CategoriesPage extends StatelessWidget {
           ),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               itemCount: categories.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
@@ -96,18 +67,12 @@ class CategoriesPage extends StatelessWidget {
                 final category = categories[index];
 
                 return InkWell(
-                  borderRadius: BorderRadius.circular(
-                    22,
-                  ),
+                  borderRadius: BorderRadius.circular(22),
                   onTap: () {},
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black12,
-                      ),
-                      borderRadius: BorderRadius.circular(
-                        22,
-                      ),
+                      border: Border.all(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(22),
                     ),
                     child: Column(
                       children: [
@@ -117,17 +82,13 @@ class CategoriesPage extends StatelessWidget {
                             width: double.infinity,
                             decoration: const BoxDecoration(
                               borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(
-                                  22,
-                                ),
+                                top: Radius.circular(22),
                               ),
                             ),
                             child: const Center(
                               child: Text(
                                 "IMAGE",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -147,14 +108,10 @@ class CategoriesPage extends StatelessWidget {
                                     fontSize: 15,
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 6,
-                                ),
+                                const SizedBox(height: 6),
                                 Text(
                                   category["count"]!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                  ),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                               ],
                             ),

@@ -33,8 +33,6 @@ class AvatarSelectionScreen extends StatelessWidget {
     'assets/images/male15.png',
     'assets/images/male16.png',
     'assets/images/female10.png',
-    'assets/images/Textido Logo.png',
-    'assets/images/spiiiq Logo.jpeg',
   ];
 
   @override

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:realstore/live/liveControllers/theme_controller.dart';
 import 'package:realstore/live/userAuth/authController.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+//import 'package:url_launcher/url_launcher.dart';
 
 class VerifiedController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -110,105 +111,6 @@ class VerifiedController extends GetxController {
       verifiedAt.value = null;
       verifiedExpiresAt.value = null;
       daysLeft.value = 0;
-    }
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                       💳 PAYSTACK VERIFICATION                              */
-  /* -------------------------------------------------------------------------- */
-
-  // Future<void> verifyWithPaystack() async {
-  //   final user = _auth.currentUser;
-  //   if (user == null) {
-  //     _snack('Error', 'Please log in');
-  //     return;
-  //   }
-
-  //   const double amount = 5000;
-  //   final email = user.email;
-
-  //   if (email == null || email.isEmpty) {
-  //     _snack('Error', 'Email not found');
-  //     return;
-  //   }
-
-  //   PaystackPopup.openPaystackPopup(
-  //     email: email,
-  //     amount: (amount * 100).toString(),
-  //     ref: "verify-${DateTime.now().millisecondsSinceEpoch}",
-  //     onClosed: () {
-  //       _snack('Payment cancelled', 'Verification was not completed');
-  //     },
-  //     onSuccess: () async {
-  //       await _activateOrExtendVerification();
-  //     },
-  //   );
-  // }
-
-  Future<void> verifyWithPaystack() async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      _snack('Error', 'Please log in');
-      return;
-    }
-
-    final email = user.email;
-    if (email == null || email.isEmpty) {
-      _snack('Error', 'Email not found');
-      return;
-    }
-
-    const double amountKobo = 2000; // ₦5,000 in kobo
-
-    final reference = "verify-${DateTime.now().millisecondsSinceEpoch}";
-
-    // try {
-    //   await PaystackService.startPayment(
-    //     context: Get.context!,
-    //     email: email,
-    //     reference: reference,
-    //     amount: amountKobo,
-    //     onSuccess: (paymentData) async {
-    //       _snack('Payment Success', 'Verification completed successfully');
-    //       await _activateOrExtendVerification();
-    //     },
-    //     onError: (error) {
-    //       _snack('Payment Error', error);
-    //     },
-    //   );
-    // } catch (e) {
-    //   _snack('Error', 'Could not launch Paystack: $e');
-    // }
-  }
-
-  // ------------------------------------------------
-
-  Future<void> contactForGoldVerification() async {
-    try {
-      const phoneNumber = '2349030323601'; // Replace with your WhatsApp number
-
-      final message = '''
-Hello Textido Team,
-
-I am a Textido user and I would like to request a Gold Verification Badge for my account.
-
-Kindly assist me with the verification process.
-
-Thank you.
-''';
-
-      final uri = Uri.parse(
-        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}',
-      );
-
-      if (!await canLaunchUrl(uri)) {
-        Get.snackbar('WhatsApp Error', 'Unable to open WhatsApp.');
-        return;
-      }
-
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      Get.snackbar('Error', 'Unable to open WhatsApp.');
     }
   }
 
