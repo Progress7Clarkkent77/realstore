@@ -19,7 +19,7 @@ class StatusController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthController _auth = Get.find<AuthController>();
   //final Blockchain _blockchain = Blockchain();
-  final RController _RCtrl = Get.find<RController>();
+  final RController _rewardCtrl = Get.find<RController>();
   //final ModerationController _moderation = Get.find<ModerationController>();
   ModerationController get _moderation => Get.find<ModerationController>();
 
@@ -242,9 +242,9 @@ class StatusController extends GetxController {
             : FieldValue.arrayUnion([uid]),
       });
 
-      // No R is given when unliking.
+      // No reward is given when unliking.
       if (!wasLiked) {
-        await handleProductLikeR(productId: productId, userUid: uid);
+        await handleProductLikeReward(productId: productId, userUid: uid);
       }
     } catch (e) {
       // Roll back if the write failed
@@ -264,30 +264,30 @@ class StatusController extends GetxController {
     }
   }
 
-  /// Each user can receive this R only once per product.
-  Future<void> handleProductLikeR({
+  /// Each user can receive this reward only once per product.
+  Future<void> handleProductLikeReward({
     required String productId,
     required String userUid,
   }) async {
     try {
-      final RRef = _firestore
-          .collection('productRs')
+      final rewardRef = _firestore
+          .collection('productRewards')
           .doc(userUid)
           .collection('productLikes')
           .doc(productId);
 
-      // 🛑 Prevent Ring the same user twice for the same product.
-      final RSnap = await RRef.get();
+      // 🛑 Prevent rewarding the same user twice for the same product.
+      final rewardSnap = await rewardRef.get();
 
-      if (RSnap.exists) {
+      if (rewardSnap.exists) {
         print("ℹ️ Product like r already given to $userUid for $productId");
         return;
       }
 
-      await _RCtrl.incrementTinyR(uid: userUid);
+      await _rewardCtrl.incrementTinyR(uid: userUid);
 
-      await RRef.set({
-        'Red': true,
+      await rewardRef.set({
+        'rewarded': true,
         'productId': productId,
         'userUid': userUid,
         'timestamp': FieldValue.serverTimestamp(),

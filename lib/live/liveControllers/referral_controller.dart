@@ -11,7 +11,7 @@ import 'package:realstore/live/userAuth/authController.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // class ReferController extends GetxController {
-//   final RController RController = Get.find<RController>();
+//   final RewardController rewardController = Get.find<RewardController>();
 //   final AuthController authController = Get.find<AuthController>();
 //   final ThemeController themeController = Get.find<ThemeController>();
 //   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -186,7 +186,7 @@ import 'package:url_launcher/url_launcher.dart';
 //         'platform': selectedPlatform.value,
 //         'link': link,
 //         'status': false,
-//         'RGiven': false,
+//         'rewardGiven': false,
 //         'submittedAt': FieldValue.serverTimestamp(),
 //         'reviewedAt': null,
 //       });
@@ -220,17 +220,17 @@ import 'package:url_launcher/url_launcher.dart';
 
 //       final data = doc.data()!;
 
-//       if (data['RGiven'] == true) {
+//       if (data['rewardGiven'] == true) {
 //         return;
 //       }
 
 //       await docRef.update({
 //         'status': true,
-//         'RGiven': true,
+//         'rewardGiven': true,
 //         'reviewedAt': FieldValue.serverTimestamp(),
 //       });
 
-//       await RController.incrementRefer(
+//       await rewardController.incrementRefer(
 //         uid: data['uid'],
 //       );
 //     } catch (_) {}
@@ -312,8 +312,8 @@ import 'package:url_launcher/url_launcher.dart';
 //         mode: LaunchMode.externalApplication,
 //       );
 
-//       // 🎁 R
-//       await RController.incrementRefer(uid: uid);
+//       // 🎁 Reward
+//       await rewardController.incrementRefer(uid: uid);
 
 //       // 💾 Save date
 //       await userRef.update({
@@ -338,9 +338,9 @@ import 'package:url_launcher/url_launcher.dart';
 ///   by AuthController (on signup, and backfilled on login).
 /// - This controller just displays that code as simple, copiable text —
 ///   no submissions, no admin approval.
-/// - The actual R is handled entirely by AuthController: when a new
+/// - The actual reward is handled entirely by AuthController: when a new
 ///   user who entered someone's referCode at signup gets their `verify`
-///   field set to true, that referrer is Red automatically (once).
+///   field set to true, that referrer is rewarded automatically (once).
 class ReferController extends GetxController {
   final AuthController authController = Get.find<AuthController>();
   final ThemeController themeController = Get.find<ThemeController>();
@@ -385,7 +385,7 @@ class ReferController extends GetxController {
     return '''
 RealStore is 100% Legit! 🎉
 
-Download RealStore and sign up with my referral code: $code, Log in, verify your email & start earning Rs by:
+Download RealStore and sign up with my referral code: $code, Log in, verify your email & start earning rewards by:
 
 • Liking Available Products.
 ''';
@@ -418,8 +418,8 @@ Download RealStore and sign up with my referral code: $code, Log in, verify your
     _showSnackbar('Copied', 'Referral message copied to clipboard.');
   }
 
-  /// 🔗 Open WhatsApp with the referral message prefilled. No R is
-  /// tied to sharing itself — the R only fires once someone who
+  /// 🔗 Open WhatsApp with the referral message prefilled. No reward is
+  /// tied to sharing itself — the reward only fires once someone who
   /// actually used this code verifies their email (see AuthController).
   Future<void> shareToWhatsApp() async {
     if (referCode.value.isEmpty) {

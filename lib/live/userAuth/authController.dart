@@ -402,10 +402,10 @@ class AuthController extends GetxController {
       // ✅ Step 6: Update reactive state
       isVerified.value = true;
 
-      // 🎁 Step 7: R whoever referred this user — only fires the
+      // 🎁 Step 7: Reward whoever referred this user — only fires the
       // first time this user's `verify` field becomes true (this method
       // already returned early above if it was already true).
-      await _RReferrerIfNeeded(user.uid, userDoc);
+      await _rewardReferrerIfNeeded(user.uid, userDoc);
     } catch (e) {
       Get.snackbar("Error", "Failed to send verification email");
     }
@@ -527,7 +527,7 @@ class AuthController extends GetxController {
     final docRef = _firestore.collection('e-users').doc(user.uid);
 
     // 🔎 Read first — this tells us whether this call is the actual
-    // false→true transition (so we don't R twice), and gives us the
+    // false→true transition (so we don't reward twice), and gives us the
     // `referredBy` field before we write below.
     final userDoc = await docRef.get();
     final wasAlreadyVerified =
@@ -537,12 +537,12 @@ class AuthController extends GetxController {
 
     isVerified.value = true;
 
-    // 🎁 R whoever referred this user — only on the transition into
+    // 🎁 Reward whoever referred this user — only on the transition into
     // verified. This is the real verification path (backed by Firebase
     // Auth's emailVerified), unlike the timer-based one in
     // sendVerificationEmail() above.
     if (!wasAlreadyVerified) {
-      await _RReferrerIfNeeded(user.uid, userDoc);
+      await _rewardReferrerIfNeeded(user.uid, userDoc);
     }
 
     return true;
@@ -647,7 +647,7 @@ class AuthController extends GetxController {
   // (generated on signup, and backfilled on login for accounts that
   // predate this feature). A new user can optionally enter someone
   // else's code at signup, which links `referredBy` on their own doc.
-  // The referrer is only Red once — the first time the new user's
+  // The referrer is only rewarded once — the first time the new user's
   // `verify` field flips to true in sendVerificationEmail() above.
   // =====================================================================
 
@@ -693,7 +693,7 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> _RReferrerIfNeeded(
+  Future<void> _rewardReferrerIfNeeded(
     String newUserUid,
     DocumentSnapshot userDoc,
   ) async {
@@ -702,16 +702,16 @@ class AuthController extends GetxController {
       final referrerUid = data?['referredBy'] as String?;
 
       if (referrerUid == null || referrerUid.isEmpty) return;
-      if (data?['referralRGiven'] == true) return;
+      if (data?['referralRewardGiven'] == true) return;
 
       final rCtrl = Get.find<RController>();
       await rCtrl.incrementRefer(uid: referrerUid);
 
       await _firestore.collection('e-users').doc(newUserUid).set({
-        'referralRGiven': true,
+        'referralRewardGiven': true,
       }, SetOptions(merge: true));
     } catch (e) {
-      print("❌ Error Ring referrer: $e");
+      print("❌ Error rewarding referrer: $e");
     }
   }
 }

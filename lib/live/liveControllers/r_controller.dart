@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class RController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// 🔹 Tiny R (0.00005)
+  /// 🔹 Tiny reward (0.00005)
   Future<void> incrementTinyR({required String uid}) async {
     await _incrementBalance(uid: uid, amount: 0.00005);
   }
@@ -18,17 +18,17 @@ class RController extends GetxController {
     await _incrementBalance(uid: uid, amount: 0.00005);
   }
 
-  /// 🔹 Small R (0.002)
+  /// 🔹 Small reward (0.002)
   Future<void> incrementSmallR({required String uid}) async {
     await _incrementBalance(uid: uid, amount: 0.0002);
   }
 
-  /// 🔹 Medium R (0.005)
+  /// 🔹 Medium reward (0.005)
   Future<void> incrementMediumR({required String uid}) async {
     await _incrementBalance(uid: uid, amount: 0.0005);
   }
 
-  /// 🔹 Referral R (0.003)
+  /// 🔹 Referral reward (0.003)
   Future<void> incrementRefer({required String uid}) async {
     await _incrementBalance(uid: uid, amount: 0.0009);
   }
@@ -43,9 +43,9 @@ class RController extends GetxController {
 
       await userRef.update({'available_bal': FieldValue.increment(amount)});
 
-      print("💰 Red $uid with $amount");
+      print("💰 Rewarded $uid with $amount");
     } catch (e, stack) {
-      print("❌ RController Exception: $e");
+      print("❌ RewardController Exception: $e");
       print("StackTrace: $stack");
     }
   }
